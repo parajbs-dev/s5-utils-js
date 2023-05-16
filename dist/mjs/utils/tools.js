@@ -3,7 +3,7 @@ import { base58BitcoinEncode, base58BitcoinDecode, base32rfcEncode, base32rfcDec
  * Encodes a CID using base58 encoding and adds a prefix "z".
  *
  * @param bytes - The bytes to encode.
- * @returns {string|undefined} - The encoded CID with "z" prefix or undefined if the cid is not of length 38.
+ * @returns {string} - The encoded CID with "z" prefix or undefined if the cid is not of length 38.
  */
 export function getS5zCidEncoded(bytes) {
     // Check if the bytes has a length of 38 (standard uncompressed Bitcoin address)
@@ -13,6 +13,7 @@ export function getS5zCidEncoded(bytes) {
         // Return the modified Bitcoin address with a prefix "z"
         return zCid;
     }
+    return '';
 }
 /**
  * Decodes a CID that has been encoded using base58 encoding and prefixed with "z".
@@ -50,13 +51,13 @@ export function getS5uCidEncoded(bytes) {
         return uCid;
     }
     // If the bytes is not of length 38, return undefined.
-    return undefined;
+    return '';
 }
 /**
  * Decodes a CID that has been encoded using base64url encoding and prefixed with "u", or a CID that is already decoded.
  *
  * @param {string} cid - The CID to decode.
- * @returns {Uint8Array|undefined} - The decoded CID as a Uint8Array or undefined if the input CID is not valid.
+ * @returns {Uint8Array} - The decoded CID as a Uint8Array or undefined if the input CID is not valid.
  */
 export function getS5uBytesDecoded(cid) {
     // Check if the input CID is prefixed with "u" and has a length of at least 52.
@@ -72,7 +73,7 @@ export function getS5uBytesDecoded(cid) {
         return uCidBytes;
     }
     // If the input CID is not valid, return undefined.
-    return undefined;
+    return new Uint8Array();
 }
 /**
  * Encodes a CID string using base32rfc encoding and adds "b" at the beginning of the resulting string.
@@ -85,6 +86,7 @@ export function getS5bCidEncoded(bytes) {
         const bCid = 'b' + base32rfcEncode(bytes).toLowerCase();
         return bCid;
     }
+    return '';
 }
 /**
  * Decodes an encoded CID string and returns the decoded bytes.

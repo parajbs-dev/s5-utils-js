@@ -6,7 +6,7 @@ const basetools_1 = require("./basetools");
  * Encodes a CID using base58 encoding and adds a prefix "z".
  *
  * @param bytes - The bytes to encode.
- * @returns {string|undefined} - The encoded CID with "z" prefix or undefined if the cid is not of length 38.
+ * @returns {string} - The encoded CID with "z" prefix or undefined if the cid is not of length 38.
  */
 function getS5zCidEncoded(bytes) {
     // Check if the bytes has a length of 38 (standard uncompressed Bitcoin address)
@@ -16,6 +16,7 @@ function getS5zCidEncoded(bytes) {
         // Return the modified Bitcoin address with a prefix "z"
         return zCid;
     }
+    return '';
 }
 exports.getS5zCidEncoded = getS5zCidEncoded;
 /**
@@ -55,14 +56,14 @@ function getS5uCidEncoded(bytes) {
         return uCid;
     }
     // If the bytes is not of length 38, return undefined.
-    return undefined;
+    return '';
 }
 exports.getS5uCidEncoded = getS5uCidEncoded;
 /**
  * Decodes a CID that has been encoded using base64url encoding and prefixed with "u", or a CID that is already decoded.
  *
  * @param {string} cid - The CID to decode.
- * @returns {Uint8Array|undefined} - The decoded CID as a Uint8Array or undefined if the input CID is not valid.
+ * @returns {Uint8Array} - The decoded CID as a Uint8Array or undefined if the input CID is not valid.
  */
 function getS5uBytesDecoded(cid) {
     // Check if the input CID is prefixed with "u" and has a length of at least 52.
@@ -78,7 +79,7 @@ function getS5uBytesDecoded(cid) {
         return uCidBytes;
     }
     // If the input CID is not valid, return undefined.
-    return undefined;
+    return new Uint8Array();
 }
 exports.getS5uBytesDecoded = getS5uBytesDecoded;
 /**
@@ -92,6 +93,7 @@ function getS5bCidEncoded(bytes) {
         const bCid = 'b' + (0, basetools_1.base32rfcEncode)(bytes).toLowerCase();
         return bCid;
     }
+    return '';
 }
 exports.getS5bCidEncoded = getS5bCidEncoded;
 /**

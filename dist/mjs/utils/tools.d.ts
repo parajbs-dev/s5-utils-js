@@ -2,9 +2,9 @@
  * Encodes a CID using base58 encoding and adds a prefix "z".
  *
  * @param bytes - The bytes to encode.
- * @returns {string|undefined} - The encoded CID with "z" prefix or undefined if the cid is not of length 38.
+ * @returns {string} - The encoded CID with "z" prefix or undefined if the cid is not of length 38.
  */
-export declare function getS5zCidEncoded(bytes: Uint8Array): string | undefined;
+export declare function getS5zCidEncoded(bytes: Uint8Array): string;
 /**
  * Decodes a CID that has been encoded using base58 encoding and prefixed with "z".
  *
@@ -18,21 +18,21 @@ export declare function getS5zBytesDecoded(cid: string): Uint8Array | undefined;
  * @param bytes - The bytes to encode.
  * @returns {string|undefined} - The encoded CID with "u" prefix or undefined if the input CID is not of length 38.
  */
-export declare function getS5uCidEncoded(bytes: Uint8Array): string | undefined;
+export declare function getS5uCidEncoded(bytes: Uint8Array): string;
 /**
  * Decodes a CID that has been encoded using base64url encoding and prefixed with "u", or a CID that is already decoded.
  *
  * @param {string} cid - The CID to decode.
- * @returns {Uint8Array|undefined} - The decoded CID as a Uint8Array or undefined if the input CID is not valid.
+ * @returns {Uint8Array} - The decoded CID as a Uint8Array or undefined if the input CID is not valid.
  */
-export declare function getS5uBytesDecoded(cid: string): Uint8Array | undefined;
+export declare function getS5uBytesDecoded(cid: string): Uint8Array;
 /**
  * Encodes a CID string using base32rfc encoding and adds "b" at the beginning of the resulting string.
  *
  * @param bytes - The bytes to encode.
  * @returns The encoded CID string with "b" at the beginning, or undefined if the input CID is not 38 characters long.
  */
-export declare function getS5bCidEncoded(bytes: Uint8Array): string | undefined;
+export declare function getS5bCidEncoded(bytes: Uint8Array): string;
 /**
  * Decodes an encoded CID string and returns the decoded bytes.
  *
