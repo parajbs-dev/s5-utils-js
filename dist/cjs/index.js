@@ -1,7 +1,7 @@
 "use strict";
 /* istanbul ignore file */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validationError = exports.throwValidationError = exports.makeUrl = exports.ensureUrlPrefix = exports.ensureUrl = exports.ensurePrefix = exports.addUrlQuery = exports.getSubdomainFromUrl = exports.addUrlSubdomain = exports.defaultPortalUrl = exports.uriS5Prefix = exports.URI_S5_PREFIX = exports.defaultS5PortalUrl = exports.DEFAULT_S5_PORTAL_URL = exports.convertBase32ToBase64url = exports.convertBase64urlToBase32 = exports.convertBase58ToBase64url = exports.convertBase64urlToBase58 = exports.convertBase32ToBase58 = exports.convertBase58ToBase32 = exports.getS5bBytesDecoded = exports.getS5bCidEncoded = exports.getS5uBytesDecoded = exports.getS5uCidEncoded = exports.getS5zBytesDecoded = exports.getS5zCidEncoded = exports.trimSuffix = exports.trimPrefix = exports.getFileMimeType = exports.base64urlDecode = exports.base64urlEncode = exports.base32rfcDecode = exports.base32rfcEncode = exports.base58BitcoinDecode = exports.base58BitcoinEncode = void 0;
+exports.validationError = exports.throwValidationError = exports.makeUrl = exports.ensureUrlPrefix = exports.ensureUrl = exports.ensurePrefix = exports.addUrlQuery = exports.getSubdomainFromUrl = exports.addUrlSubdomain = exports.defaultPortalUrl = exports.uriS5Prefix = exports.URI_S5_PREFIX = exports.defaultS5PortalUrl = exports.DEFAULT_S5_PORTAL_URL = exports.convertBase32ToBase64url = exports.convertBase64urlToBase32 = exports.convertBase58ToBase64url = exports.convertBase64urlToBase58 = exports.convertBase32ToBase58 = exports.convertBase58ToBase32 = exports.getS5bBytesDecoded = exports.getS5bCidEncoded = exports.getS5uBytesDecoded = exports.getS5uCidEncoded = exports.getS5zBytesDecoded = exports.getS5zCidEncoded = exports.trimSuffix = exports.trimPrefix = exports.getFileMimeType = exports.convertS5mHashToBase64url = exports.getS5CidFromHash = exports.getS5HashFromB3hash = exports.getB3hashFromFile = exports.numberToBuffer = exports.base64urlDecode = exports.base64urlEncode = exports.base32rfcDecode = exports.base32rfcEncode = exports.base58BitcoinDecode = exports.base58BitcoinEncode = void 0;
 // Main exports.
 var basetools_1 = require("./utils/basetools");
 Object.defineProperty(exports, "base58BitcoinEncode", { enumerable: true, get: function () { return basetools_1.base58BitcoinEncode; } });
@@ -10,6 +10,12 @@ Object.defineProperty(exports, "base32rfcEncode", { enumerable: true, get: funct
 Object.defineProperty(exports, "base32rfcDecode", { enumerable: true, get: function () { return basetools_1.base32rfcDecode; } });
 Object.defineProperty(exports, "base64urlEncode", { enumerable: true, get: function () { return basetools_1.base64urlEncode; } });
 Object.defineProperty(exports, "base64urlDecode", { enumerable: true, get: function () { return basetools_1.base64urlDecode; } });
+var blake3tools_1 = require("./utils/blake3tools");
+Object.defineProperty(exports, "numberToBuffer", { enumerable: true, get: function () { return blake3tools_1.numberToBuffer; } });
+Object.defineProperty(exports, "getB3hashFromFile", { enumerable: true, get: function () { return blake3tools_1.getB3hashFromFile; } });
+Object.defineProperty(exports, "getS5HashFromB3hash", { enumerable: true, get: function () { return blake3tools_1.getS5HashFromB3hash; } });
+Object.defineProperty(exports, "getS5CidFromHash", { enumerable: true, get: function () { return blake3tools_1.getS5CidFromHash; } });
+Object.defineProperty(exports, "convertS5mHashToBase64url", { enumerable: true, get: function () { return blake3tools_1.convertS5mHashToBase64url; } });
 var file_1 = require("./utils/file");
 Object.defineProperty(exports, "getFileMimeType", { enumerable: true, get: function () { return file_1.getFileMimeType; } });
 var string_1 = require("./utils/string");

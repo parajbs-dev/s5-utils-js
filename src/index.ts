@@ -11,6 +11,14 @@ export {
   base64urlDecode,
 } from "./utils/basetools";
 
+export {
+  numberToBuffer,
+  getB3hashFromFile,
+  getS5HashFromB3hash,
+  getS5CidFromHash,
+  convertS5mHashToBase64url,
+} from "./utils/blake3tools";
+
 export { getFileMimeType } from "./utils/file";
 
 export { trimPrefix, trimSuffix } from "./utils/string";

@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 // Main exports.
 export { base58BitcoinEncode, base58BitcoinDecode, base32rfcEncode, base32rfcDecode, base64urlEncode, base64urlDecode, } from "./utils/basetools";
+export { numberToBuffer, getB3hashFromFile, getS5HashFromB3hash, getS5CidFromHash, convertS5mHashToBase64url, } from "./utils/blake3tools";
 export { getFileMimeType } from "./utils/file";
 export { trimPrefix, trimSuffix } from "./utils/string";
 export { getS5zCidEncoded, getS5zBytesDecoded, getS5uCidEncoded, getS5uBytesDecoded, getS5bCidEncoded, getS5bBytesDecoded, convertBase58ToBase32, convertBase32ToBase58, convertBase64urlToBase58, convertBase58ToBase64url, convertBase64urlToBase32, convertBase32ToBase64url, } from "./utils/tools";
