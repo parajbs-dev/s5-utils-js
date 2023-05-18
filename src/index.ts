@@ -15,8 +15,11 @@ export {
   numberToBuffer,
   getB3hashFromFile,
   getS5HashFromB3hash,
-  getS5CidFromHash,
+  getS5CidFromMHash,
+  getS5mHashFromCid,
   convertS5mHashToBase64url,
+  convertS5CidToMHash,
+  convertS5CidToMHashBase64url,
 } from "./utils/blake3tools";
 
 export { getFileMimeType } from "./utils/file";
@@ -56,3 +59,88 @@ export {
 } from "./utils/url";
 
 export { throwValidationError, validationError } from "./utils/validation";
+
+// constants exports.
+
+export {
+  cidTypeRaw,
+  cidTypeMetadataMedia,
+//  cidTypeMetadataFile,
+  cidTypeMetadataWebApp,
+  cidTypeResolver,
+  cidTypeUserIdentity,
+  cidTypeBridge,
+  cidTypeEncrypted,
+  registryS5MagicByte,
+  mhashBlake3Default,
+  mkeyEd25519,
+  encryptionAlgorithmXChaCha20Poly1305,
+  encryptionAlgorithmXChaCha20Poly1305NonceSize,
+  metadataMagicByte,
+  metadataTypeMedia,
+  metadataTypeWebApp,
+  metadataTypeDirectory,
+  metadataTypeProofs,
+  metadataTypeUserIdentity,
+  parentLinkTypeUserIdentity,
+  registryMaxDataSize,
+  authPayloadVersion1,
+  userIdentityLinkProfile,
+  userIdentityLinkPublicFileSystem,
+//  userIdentityLinkFollowingList,
+  protocolMethodHandshakeOpen,
+  protocolMethodHandshakeDone,
+  protocolMethodSignedMessage,
+  protocolMethodHashQuery,
+  protocolMethodAnnouncePeers,
+  protocolMethodRegistryQuery,
+  recordTypeStorageLocation,
+  recordTypeRegistryEntry,
+  metadataExtensionLicenses,
+  metadataExtensionDonationKeys,
+  metadataExtensionWikidataClaims,
+  metadataExtensionLanguages,
+  metadataExtensionSourceUris,
+  metadataExtensionUpdateCID,
+  metadataExtensionPreviousVersions,
+  metadataExtensionTimestamp,
+  metadataExtensionTags,
+  metadataExtensionCategories,
+  metadataExtensionViewTypes,
+  metadataExtensionBasicMediaMetadata,
+  metadataExtensionBridge,
+  metadataMediaDetailsDuration,
+  metadataMediaDetailsIsLive,
+  metadataProofTypeSignature,
+  metadataProofTypeTimestamp,
+  storageLocationTypeArchive,
+  storageLocationTypeFile,
+  storageLocationTypeFull,
+  storageLocationTypeBridge,
+} from "./utils/constants";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

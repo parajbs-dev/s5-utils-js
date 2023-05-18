@@ -13,7 +13,7 @@ import {
  * @param bytes - The bytes to encode.
  * @returns {string} - The encoded CID with "z" prefix or undefined if the cid is not of length 38.
  */
-export function getS5zCidEncoded(bytes: Uint8Array): string {
+export function getS5zCidEncoded(bytes: Buffer): string {
   // Check if the bytes has a length of 38 (standard uncompressed Bitcoin address)
   if (bytes.length === 38) {
     // Encode the input address using base58 encoding
@@ -25,26 +25,33 @@ return '';
 }
 
 /**
- * Decodes a CID that has been encoded using base58 encoding and prefixed with "z".
+ * Decodes a given input address using base58 decoding and returns the byte representation of the decoded address.
+ * If the input address starts with "z" and has a length greater than or equal to 53, the remaining characters (excluding the prefix "z") are decoded.
+ * If the input address does not start with "z" and has a length less than or equal to 52, the entire address is decoded.
+ * Throws an error if the input address does not match any of the specified formats.
  *
- * @param {string} cid - The CID to decode.
- * @returns {Uint8Array|undefined} - The decoded CID as a Uint8Array or undefined if the cid is not valid.
+ * @param cid The input address to decode.
+ * @returns The byte representation of the decoded Bitcoin address.
+ * @throws Error if the input address is invalid.
  */
-export function getS5zBytesDecoded(cid: string): Uint8Array | undefined {
+export function getS5zBytesDecoded(cid: string): Buffer {
   // Check if the first character of the input address is "z" and the length is greater than or equal to 53
   if (cid[0] === 'z' && cid.length >= 53) {
     // Decode the remaining characters of the input address (excluding the prefix "z") using base58 decoding
-    const zCidBytes: Uint8Array = base58BitcoinDecode(cid.substring(1));
+    const zCidBytes = base58BitcoinDecode(cid.substring(1));
     // Return the byte representation of the decoded Bitcoin address
     return zCidBytes;
   }
   // Check if the first character of the input address is not "z" and the length is less than or equal to 52
   if (cid[0] !== 'z' && cid.length <= 52) {
     // Decode the input address using base58 decoding
-    const zCidBytes: Uint8Array = base58BitcoinDecode(cid);
+    const zCidBytes = base58BitcoinDecode(cid);
     // Return the byte representation of the decoded Bitcoin address
     return zCidBytes;
   }
+  
+  // Handle the case where none of the conditions are met
+  throw new Error('Invalid input address');
 }
 
 /**
@@ -53,7 +60,7 @@ export function getS5zBytesDecoded(cid: string): Uint8Array | undefined {
  * @param bytes - The bytes to encode.
  * @returns {string|undefined} - The encoded CID with "u" prefix or undefined if the input CID is not of length 38.
  */
-export function getS5uCidEncoded(bytes: Uint8Array): string {
+export function getS5uCidEncoded(bytes: Buffer): string {
   // Check if the input CID is of length 38.
   if (bytes.length === 38) {
     // Encode the CID using base64url encoding and prefix it with "u".
@@ -65,26 +72,29 @@ export function getS5uCidEncoded(bytes: Uint8Array): string {
 }
 
 /**
- * Decodes a CID that has been encoded using base64url encoding and prefixed with "u", or a CID that is already decoded.
- *
- * @param {string} cid - The CID to decode.
- * @returns {Uint8Array} - The decoded CID as a Uint8Array or undefined if the input CID is not valid.
+ * Decodes a Content Identifier (CID) string and returns the decoded bytes as a Buffer object.
+ * 
+ * @param cid - The CID string to decode.
+ * @returns The decoded bytes as a Buffer object.
+ * @throws Error if the CID format is invalid.
  */
-export function getS5uBytesDecoded(cid: string): Uint8Array  {
+export function getS5uBytesDecoded(cid: string): Buffer {
   // Check if the input CID is prefixed with "u" and has a length of at least 52.
   if (cid[0] === 'u' && cid.length >= 52) {
     // Decode the CID using base64url decoding after removing the "u" prefix.
     const uCidBytes = base64urlDecode(cid.substring(1));
     return uCidBytes;
-  } 
+  }
+  
   // Check if the input CID is not prefixed with "u" and has a length of no more than 51.
   if (cid[0] !== 'u' && cid.length <= 51) {
     // Assume the input CID is already decoded and decode it using base64url decoding.
     const uCidBytes = base64urlDecode(cid);
     return uCidBytes;
   }
-  // If the input CID is not valid, return undefined.
-  return new Uint8Array();
+  
+  // Throw an error for invalid CID format.
+  throw new Error('Invalid CID format');
 }
 
 /**
@@ -93,7 +103,7 @@ export function getS5uBytesDecoded(cid: string): Uint8Array  {
  * @param bytes - The bytes to encode.
  * @returns The encoded CID string with "b" at the beginning, or undefined if the input CID is not 38 characters long.
  */
-export function getS5bCidEncoded(bytes: Uint8Array): string  {
+export function getS5bCidEncoded(bytes: Buffer): string  {
   if (bytes.length === 38) {
     const bCid = 'b' + base32rfcEncode(bytes).toLowerCase();
     return bCid;
@@ -105,9 +115,9 @@ return '';
  * Decodes an encoded CID string and returns the decoded bytes.
  *
  * @param cid - The encoded CID string to decode.
- * @returns The decoded bytes of the CID as a Uint8Array.
+ * @returns The decoded bytes of the CID as a Buffer.
  */
-export function getS5bBytesDecoded(cid: string): Uint8Array {
+export function getS5bBytesDecoded(cid: string): Buffer {
   // Check if the CID starts with "B" (uppercase) and has length >= 62 and contains at least one uppercase character
   if (cid[0] === 'B' && cid.length >= 62 && /[A-Z]/.test(cid)) {
     cid = cid.toLowerCase(); // Convert the CID to lowercase
@@ -168,7 +178,7 @@ export function convertBase32ToBase58(cid: string): string {
  */
 export function convertBase64urlToBase58(cid: string): string {
   // Decode the base58-encoded CID using base58BitcoinDecode function.
-  const decoded: Uint8Array = base64urlDecode(cid.substring(1));
+  const decoded: Buffer = base64urlDecode(cid.substring(1));
 
   // Encode the decoded binary data as base58 using base58BitcoinEncode function.
   const encoded: string = base58BitcoinEncode(decoded);
@@ -185,7 +195,7 @@ export function convertBase64urlToBase58(cid: string): string {
  */
 export function convertBase58ToBase64url(cid: string): string {
   // Decode the base58-encoded CID using base58BitcoinDecode function.
-  const decoded: Uint8Array = base58BitcoinDecode(cid.substring(1));
+  const decoded: Buffer = base58BitcoinDecode(cid.substring(1));
 
   // Encode the decoded binary data as base64url using base64urlEncode function.
   const encoded: string = base64urlEncode(decoded);

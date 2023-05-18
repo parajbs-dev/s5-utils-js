@@ -20,10 +20,14 @@ function getS5zCidEncoded(bytes) {
 }
 exports.getS5zCidEncoded = getS5zCidEncoded;
 /**
- * Decodes a CID that has been encoded using base58 encoding and prefixed with "z".
+ * Decodes a given input address using base58 decoding and returns the byte representation of the decoded address.
+ * If the input address starts with "z" and has a length greater than or equal to 53, the remaining characters (excluding the prefix "z") are decoded.
+ * If the input address does not start with "z" and has a length less than or equal to 52, the entire address is decoded.
+ * Throws an error if the input address does not match any of the specified formats.
  *
- * @param {string} cid - The CID to decode.
- * @returns {Uint8Array|undefined} - The decoded CID as a Uint8Array or undefined if the cid is not valid.
+ * @param cid The input address to decode.
+ * @returns The byte representation of the decoded Bitcoin address.
+ * @throws Error if the input address is invalid.
  */
 function getS5zBytesDecoded(cid) {
     // Check if the first character of the input address is "z" and the length is greater than or equal to 53
@@ -40,6 +44,8 @@ function getS5zBytesDecoded(cid) {
         // Return the byte representation of the decoded Bitcoin address
         return zCidBytes;
     }
+    // Handle the case where none of the conditions are met
+    throw new Error('Invalid input address');
 }
 exports.getS5zBytesDecoded = getS5zBytesDecoded;
 /**
@@ -60,10 +66,11 @@ function getS5uCidEncoded(bytes) {
 }
 exports.getS5uCidEncoded = getS5uCidEncoded;
 /**
- * Decodes a CID that has been encoded using base64url encoding and prefixed with "u", or a CID that is already decoded.
+ * Decodes a Content Identifier (CID) string and returns the decoded bytes as a Buffer object.
  *
- * @param {string} cid - The CID to decode.
- * @returns {Uint8Array} - The decoded CID as a Uint8Array or undefined if the input CID is not valid.
+ * @param cid - The CID string to decode.
+ * @returns The decoded bytes as a Buffer object.
+ * @throws Error if the CID format is invalid.
  */
 function getS5uBytesDecoded(cid) {
     // Check if the input CID is prefixed with "u" and has a length of at least 52.
@@ -78,8 +85,8 @@ function getS5uBytesDecoded(cid) {
         const uCidBytes = (0, basetools_1.base64urlDecode)(cid);
         return uCidBytes;
     }
-    // If the input CID is not valid, return undefined.
-    return new Uint8Array();
+    // Throw an error for invalid CID format.
+    throw new Error('Invalid CID format');
 }
 exports.getS5uBytesDecoded = getS5uBytesDecoded;
 /**
@@ -100,7 +107,7 @@ exports.getS5bCidEncoded = getS5bCidEncoded;
  * Decodes an encoded CID string and returns the decoded bytes.
  *
  * @param cid - The encoded CID string to decode.
- * @returns The decoded bytes of the CID as a Uint8Array.
+ * @returns The decoded bytes of the CID as a Buffer.
  */
 function getS5bBytesDecoded(cid) {
     // Check if the CID starts with "B" (uppercase) and has length >= 62 and contains at least one uppercase character

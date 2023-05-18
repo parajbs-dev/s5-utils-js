@@ -1,7 +1,8 @@
+import { Buffer } from "buffer";
 // Define the Base58 alphabet used for Bitcoin addresses
 export const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 /**
- * Encodes a Uint8Array of bytes as a Base58-encoded string for use in Bitcoin addresses.
+ * Encodes a Buffer of bytes as a Base58-encoded string for use in Bitcoin addresses.
  *
  * @param bytes An array of bytes to encode.
  * @returns A Base58-encoded string.
@@ -37,7 +38,7 @@ export function base58BitcoinEncode(bytes) {
     return result;
 }
 /**
- * Decodes a Base58-encoded string used in Bitcoin addresses to a Uint8Array of bytes.
+ * Decodes a Base58-encoded string used in Bitcoin addresses to a Buffer of bytes.
  *
  * @param str A Base58-encoded string to decode.
  * @returns An array of bytes.
@@ -62,16 +63,16 @@ export function base58BitcoinDecode(str) {
             value >>= 8;
         }
     }
-    // Reverse the order of the bytes in the array and return as a Uint8Array
+    // Reverse the order of the bytes in the array and return as a Buffer
     bytes.reverse();
-    return new Uint8Array(bytes);
+    return Buffer.from(bytes);
 }
 // Base32 RFC 4648 Alphabet
 export const BASE32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 /**
  * Encodes binary data to Base32 RFC 4648 format.
  *
- * @param data - The binary data to encode as a Uint8Array.
+ * @param data - The binary data to encode as a Buffer.
  * @returns The Base32-encoded string.
  */
 export function base32rfcEncode(data) {
@@ -100,7 +101,7 @@ export function base32rfcEncode(data) {
  * Decodes binary data from Base32 RFC 4648 format.
  *
  * @param encoded - The Base32-encoded string to decode.
- * @returns The decoded binary data as a Uint8Array.
+ * @returns The decoded binary data as a Buffer.
  */
 export function base32rfcDecode(encoded) {
     const result = new Uint8Array(Math.ceil(encoded.length * 5 / 8)); // Allocate the result array
@@ -120,12 +121,16 @@ export function base32rfcDecode(encoded) {
         }
     }
     // Return a subarray of the result that only includes the filled elements
-    return result.subarray(0, index);
+    //return result.subarray(0, index);
+    // Convert the Uint8Array to a Buffer
+    const buffer = Buffer.from(result.subarray(0, index));
+    // Return the Buffer
+    return buffer;
 }
 /**
- * Encodes a Uint8Array as a base64url-encoded string.
+ * Encodes a Buffer as a base64url-encoded string.
  *
- * @param input The Uint8Array to encode.
+ * @param input The Buffer to encode.
  * @returns The base64url-encoded string.
  */
 export function base64urlEncode(input) {
@@ -133,10 +138,10 @@ export function base64urlEncode(input) {
     return base64.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 }
 /**
- * Decodes a base64url-encoded string as a Uint8Array.
+ * Decodes a base64url-encoded string as a Buffer.
  *
  * @param input The base64url-encoded string to decode.
- * @returns The decoded Uint8Array.
+ * @returns The decoded Buffer.
  */
 export function base64urlDecode(input) {
     input = input.replace(/-/g, '+').replace(/_/g, '/');
@@ -145,7 +150,7 @@ export function base64urlDecode(input) {
         input += '='.repeat(4 - paddingLength);
     }
     const base64 = atob(input);
-    const output = new Uint8Array(base64.length);
+    const output = Buffer.alloc(base64.length);
     for (let i = 0; i < base64.length; i++) {
         output[i] = base64.charCodeAt(i);
     }

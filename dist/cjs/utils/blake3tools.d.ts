@@ -30,7 +30,14 @@ export declare function getS5HashFromB3hash(b3hash: Buffer): Buffer;
  * @param file The file object.
  * @returns A Buffer representing the concatenated CID parts.
  */
-export declare function getS5CidFromHash(mHash: Buffer, file: File): Buffer;
+export declare function getS5CidFromMHash(mHash: Buffer, file: File): Buffer;
+/**
+ * Extracts the mHash from the CID buffer.
+ *
+ * @param cid The CID as Buffer.
+ * @returns The mHash as a Buffer.
+ */
+export declare function getS5mHashFromCid(cid: Buffer): Buffer;
 /**
  * Converts a hash value stored in a Buffer object to a URL-safe Base64 string.
  *
@@ -38,4 +45,20 @@ export declare function getS5CidFromHash(mHash: Buffer, file: File): Buffer;
  * @returns The URL-safe Base64 string representing the hash value.
  */
 export declare function convertS5mHashToBase64url(mHash: Buffer): string;
+/**
+ * Converts a CID (Content Identifier) string to an MHash (Multihash) Buffer.
+ * The function supports different CID formats based on the first character of the CID.
+ *
+ * @param cid - The CID string to be converted.
+ * @returns The mHash Buffer derived from the CID.
+ * @throws Error if the CID input address is invalid.
+ */
+export declare function convertS5CidToMHash(cid: string): Buffer;
+/**
+ * Converts an S5 CID to an MHash and then converts the MHash to Base64 URL format.
+ *
+ * @param cid The S5 CID to convert.
+ * @returns The converted MHash in Base64 URL format.
+ */
+export declare function convertS5CidToMHashBase64url(cid: string): string;
 //# sourceMappingURL=blake3tools.d.ts.map

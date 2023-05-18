@@ -23,10 +23,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertS5mHashToBase64url = exports.getS5CidFromHash = exports.getS5HashFromB3hash = exports.getB3hashFromFile = exports.numberToBuffer = void 0;
+exports.convertS5CidToMHashBase64url = exports.convertS5CidToMHash = exports.convertS5mHashToBase64url = exports.getS5mHashFromCid = exports.getS5CidFromMHash = exports.getS5HashFromB3hash = exports.getB3hashFromFile = exports.numberToBuffer = void 0;
 const blake3 = __importStar(require("blake3-wasm"));
 const buffer_1 = require("buffer");
-const constants_1 = require("./../constants");
+const tools_1 = require("./tools");
+const constants_1 = require("./constants");
 /**
  * convert a number to Buffer.
  *
@@ -99,7 +100,7 @@ exports.getS5HashFromB3hash = getS5HashFromB3hash;
  * @param file The file object.
  * @returns A Buffer representing the concatenated CID parts.
  */
-function getS5CidFromHash(mHash, file) {
+function getS5CidFromMHash(mHash, file) {
     // Buffer size for storing the file size
     const bufSize = 4;
     // Concatenate the CID parts
@@ -110,7 +111,23 @@ function getS5CidFromHash(mHash, file) {
     ]);
     return cid;
 }
-exports.getS5CidFromHash = getS5CidFromHash;
+exports.getS5CidFromMHash = getS5CidFromMHash;
+/**
+ * Extracts the mHash from the CID buffer.
+ *
+ * @param cid The CID as Buffer.
+ * @returns The mHash as a Buffer.
+ */
+function getS5mHashFromCid(cid) {
+    // Size of the CID type (assuming 1 byte)
+    const cidTypeSize = 1;
+    // Size of the hash (assuming hash size matches mHash)
+    const hashSize = cid.length - 5;
+    // Extract the mHash from the CID buffer
+    const mHash = cid.slice(cidTypeSize, cidTypeSize + hashSize);
+    return mHash;
+}
+exports.getS5mHashFromCid = getS5mHashFromCid;
 /**
  * Converts a hash value stored in a Buffer object to a URL-safe Base64 string.
  *
@@ -128,3 +145,54 @@ function convertS5mHashToBase64url(mHash) {
     return hashBase64url;
 }
 exports.convertS5mHashToBase64url = convertS5mHashToBase64url;
+/**
+ * Converts a CID (Content Identifier) string to an MHash (Multihash) Buffer.
+ * The function supports different CID formats based on the first character of the CID.
+ *
+ * @param cid - The CID string to be converted.
+ * @returns The mHash Buffer derived from the CID.
+ * @throws Error if the CID input address is invalid.
+ */
+function convertS5CidToMHash(cid) {
+    let mhash;
+    // Check the first character of the CID string
+    if (cid[0] === 'z') {
+        // Decode the CID using getS5zBytesDecoded function
+        const cidBytes = (0, tools_1.getS5zBytesDecoded)(cid);
+        // Get the mHash from the decoded CID using getS5mHashFromCid function
+        mhash = getS5mHashFromCid(cidBytes);
+    }
+    else if (cid[0] === 'u') {
+        // Decode the CID using getS5uBytesDecoded function
+        const cidBytes = (0, tools_1.getS5uBytesDecoded)(cid);
+        // Get the mHash from the decoded CID using getS5mHashFromCid function
+        mhash = getS5mHashFromCid(cidBytes);
+    }
+    else if (cid[0] === 'b') {
+        // Decode the CID using getS5bBytesDecoded function
+        const cidBytes = (0, tools_1.getS5bBytesDecoded)(cid);
+        // Get the mHash from the decoded CID using getS5mHashFromCid function
+        mhash = getS5mHashFromCid(cidBytes);
+    }
+    else {
+        // Invalid CID input address
+        throw new Error('Invalid CID input address');
+    }
+    return mhash;
+}
+exports.convertS5CidToMHash = convertS5CidToMHash;
+/**
+ * Converts an S5 CID to an MHash and then converts the MHash to Base64 URL format.
+ *
+ * @param cid The S5 CID to convert.
+ * @returns The converted MHash in Base64 URL format.
+ */
+function convertS5CidToMHashBase64url(cid) {
+    // Convert S5 CID to MHash
+    const mhash2cid = convertS5CidToMHash(cid);
+    // Convert MHash to Base64 URL format
+    const mHashBase64url = convertS5mHashToBase64url(mhash2cid);
+    // Return the Base64 URL formatted MHash
+    return mHashBase64url;
+}
+exports.convertS5CidToMHashBase64url = convertS5CidToMHashBase64url;

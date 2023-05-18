@@ -1,6 +1,7 @@
 import * as blake3 from "blake3-wasm";
 import { Buffer } from "buffer";
-import { mhashBlake3Default, cidTypeRaw } from "./../constants";
+import { getS5zBytesDecoded, getS5uBytesDecoded, getS5bBytesDecoded, } from "./tools";
+import { mhashBlake3Default, cidTypeRaw } from "./constants";
 /**
  * convert a number to Buffer.
  *
@@ -70,7 +71,7 @@ export function getS5HashFromB3hash(b3hash) {
  * @param file The file object.
  * @returns A Buffer representing the concatenated CID parts.
  */
-export function getS5CidFromHash(mHash, file) {
+export function getS5CidFromMHash(mHash, file) {
     // Buffer size for storing the file size
     const bufSize = 4;
     // Concatenate the CID parts
@@ -80,6 +81,21 @@ export function getS5CidFromHash(mHash, file) {
         numberToBuffer(file.size, bufSize) // File size converted to buffer
     ]);
     return cid;
+}
+/**
+ * Extracts the mHash from the CID buffer.
+ *
+ * @param cid The CID as Buffer.
+ * @returns The mHash as a Buffer.
+ */
+export function getS5mHashFromCid(cid) {
+    // Size of the CID type (assuming 1 byte)
+    const cidTypeSize = 1;
+    // Size of the hash (assuming hash size matches mHash)
+    const hashSize = cid.length - 5;
+    // Extract the mHash from the CID buffer
+    const mHash = cid.slice(cidTypeSize, cidTypeSize + hashSize);
+    return mHash;
 }
 /**
  * Converts a hash value stored in a Buffer object to a URL-safe Base64 string.
@@ -96,4 +112,53 @@ export function convertS5mHashToBase64url(mHash) {
         .replace(/\//g, "_")
         .replace("=", "");
     return hashBase64url;
+}
+/**
+ * Converts a CID (Content Identifier) string to an MHash (Multihash) Buffer.
+ * The function supports different CID formats based on the first character of the CID.
+ *
+ * @param cid - The CID string to be converted.
+ * @returns The mHash Buffer derived from the CID.
+ * @throws Error if the CID input address is invalid.
+ */
+export function convertS5CidToMHash(cid) {
+    let mhash;
+    // Check the first character of the CID string
+    if (cid[0] === 'z') {
+        // Decode the CID using getS5zBytesDecoded function
+        const cidBytes = getS5zBytesDecoded(cid);
+        // Get the mHash from the decoded CID using getS5mHashFromCid function
+        mhash = getS5mHashFromCid(cidBytes);
+    }
+    else if (cid[0] === 'u') {
+        // Decode the CID using getS5uBytesDecoded function
+        const cidBytes = getS5uBytesDecoded(cid);
+        // Get the mHash from the decoded CID using getS5mHashFromCid function
+        mhash = getS5mHashFromCid(cidBytes);
+    }
+    else if (cid[0] === 'b') {
+        // Decode the CID using getS5bBytesDecoded function
+        const cidBytes = getS5bBytesDecoded(cid);
+        // Get the mHash from the decoded CID using getS5mHashFromCid function
+        mhash = getS5mHashFromCid(cidBytes);
+    }
+    else {
+        // Invalid CID input address
+        throw new Error('Invalid CID input address');
+    }
+    return mhash;
+}
+/**
+ * Converts an S5 CID to an MHash and then converts the MHash to Base64 URL format.
+ *
+ * @param cid The S5 CID to convert.
+ * @returns The converted MHash in Base64 URL format.
+ */
+export function convertS5CidToMHashBase64url(cid) {
+    // Convert S5 CID to MHash
+    const mhash2cid = convertS5CidToMHash(cid);
+    // Convert MHash to Base64 URL format
+    const mHashBase64url = convertS5mHashToBase64url(mhash2cid);
+    // Return the Base64 URL formatted MHash
+    return mHashBase64url;
 }

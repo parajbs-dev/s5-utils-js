@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.base64urlDecode = exports.base64urlEncode = exports.base32rfcDecode = exports.base32rfcEncode = exports.BASE32_ALPHABET = exports.base58BitcoinDecode = exports.base58BitcoinEncode = exports.ALPHABET = void 0;
+const buffer_1 = require("buffer");
 // Define the Base58 alphabet used for Bitcoin addresses
 exports.ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 /**
- * Encodes a Uint8Array of bytes as a Base58-encoded string for use in Bitcoin addresses.
+ * Encodes a Buffer of bytes as a Base58-encoded string for use in Bitcoin addresses.
  *
  * @param bytes An array of bytes to encode.
  * @returns A Base58-encoded string.
@@ -41,7 +42,7 @@ function base58BitcoinEncode(bytes) {
 }
 exports.base58BitcoinEncode = base58BitcoinEncode;
 /**
- * Decodes a Base58-encoded string used in Bitcoin addresses to a Uint8Array of bytes.
+ * Decodes a Base58-encoded string used in Bitcoin addresses to a Buffer of bytes.
  *
  * @param str A Base58-encoded string to decode.
  * @returns An array of bytes.
@@ -66,9 +67,9 @@ function base58BitcoinDecode(str) {
             value >>= 8;
         }
     }
-    // Reverse the order of the bytes in the array and return as a Uint8Array
+    // Reverse the order of the bytes in the array and return as a Buffer
     bytes.reverse();
-    return new Uint8Array(bytes);
+    return buffer_1.Buffer.from(bytes);
 }
 exports.base58BitcoinDecode = base58BitcoinDecode;
 // Base32 RFC 4648 Alphabet
@@ -76,7 +77,7 @@ exports.BASE32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 /**
  * Encodes binary data to Base32 RFC 4648 format.
  *
- * @param data - The binary data to encode as a Uint8Array.
+ * @param data - The binary data to encode as a Buffer.
  * @returns The Base32-encoded string.
  */
 function base32rfcEncode(data) {
@@ -106,7 +107,7 @@ exports.base32rfcEncode = base32rfcEncode;
  * Decodes binary data from Base32 RFC 4648 format.
  *
  * @param encoded - The Base32-encoded string to decode.
- * @returns The decoded binary data as a Uint8Array.
+ * @returns The decoded binary data as a Buffer.
  */
 function base32rfcDecode(encoded) {
     const result = new Uint8Array(Math.ceil(encoded.length * 5 / 8)); // Allocate the result array
@@ -126,13 +127,17 @@ function base32rfcDecode(encoded) {
         }
     }
     // Return a subarray of the result that only includes the filled elements
-    return result.subarray(0, index);
+    //return result.subarray(0, index);
+    // Convert the Uint8Array to a Buffer
+    const buffer = buffer_1.Buffer.from(result.subarray(0, index));
+    // Return the Buffer
+    return buffer;
 }
 exports.base32rfcDecode = base32rfcDecode;
 /**
- * Encodes a Uint8Array as a base64url-encoded string.
+ * Encodes a Buffer as a base64url-encoded string.
  *
- * @param input The Uint8Array to encode.
+ * @param input The Buffer to encode.
  * @returns The base64url-encoded string.
  */
 function base64urlEncode(input) {
@@ -141,10 +146,10 @@ function base64urlEncode(input) {
 }
 exports.base64urlEncode = base64urlEncode;
 /**
- * Decodes a base64url-encoded string as a Uint8Array.
+ * Decodes a base64url-encoded string as a Buffer.
  *
  * @param input The base64url-encoded string to decode.
- * @returns The decoded Uint8Array.
+ * @returns The decoded Buffer.
  */
 function base64urlDecode(input) {
     input = input.replace(/-/g, '+').replace(/_/g, '/');
@@ -153,7 +158,7 @@ function base64urlDecode(input) {
         input += '='.repeat(4 - paddingLength);
     }
     const base64 = atob(input);
-    const output = new Uint8Array(base64.length);
+    const output = buffer_1.Buffer.alloc(base64.length);
     for (let i = 0; i < base64.length; i++) {
         output[i] = base64.charCodeAt(i);
     }

@@ -1,45 +1,51 @@
+/// <reference types="node" />
 /**
  * Encodes a CID using base58 encoding and adds a prefix "z".
  *
  * @param bytes - The bytes to encode.
  * @returns {string} - The encoded CID with "z" prefix or undefined if the cid is not of length 38.
  */
-export declare function getS5zCidEncoded(bytes: Uint8Array): string;
+export declare function getS5zCidEncoded(bytes: Buffer): string;
 /**
- * Decodes a CID that has been encoded using base58 encoding and prefixed with "z".
+ * Decodes a given input address using base58 decoding and returns the byte representation of the decoded address.
+ * If the input address starts with "z" and has a length greater than or equal to 53, the remaining characters (excluding the prefix "z") are decoded.
+ * If the input address does not start with "z" and has a length less than or equal to 52, the entire address is decoded.
+ * Throws an error if the input address does not match any of the specified formats.
  *
- * @param {string} cid - The CID to decode.
- * @returns {Uint8Array|undefined} - The decoded CID as a Uint8Array or undefined if the cid is not valid.
+ * @param cid The input address to decode.
+ * @returns The byte representation of the decoded Bitcoin address.
+ * @throws Error if the input address is invalid.
  */
-export declare function getS5zBytesDecoded(cid: string): Uint8Array | undefined;
+export declare function getS5zBytesDecoded(cid: string): Buffer;
 /**
  * Encodes a CID using base64url encoding and prefixes it with "u".
  *
  * @param bytes - The bytes to encode.
  * @returns {string|undefined} - The encoded CID with "u" prefix or undefined if the input CID is not of length 38.
  */
-export declare function getS5uCidEncoded(bytes: Uint8Array): string;
+export declare function getS5uCidEncoded(bytes: Buffer): string;
 /**
- * Decodes a CID that has been encoded using base64url encoding and prefixed with "u", or a CID that is already decoded.
+ * Decodes a Content Identifier (CID) string and returns the decoded bytes as a Buffer object.
  *
- * @param {string} cid - The CID to decode.
- * @returns {Uint8Array} - The decoded CID as a Uint8Array or undefined if the input CID is not valid.
+ * @param cid - The CID string to decode.
+ * @returns The decoded bytes as a Buffer object.
+ * @throws Error if the CID format is invalid.
  */
-export declare function getS5uBytesDecoded(cid: string): Uint8Array;
+export declare function getS5uBytesDecoded(cid: string): Buffer;
 /**
  * Encodes a CID string using base32rfc encoding and adds "b" at the beginning of the resulting string.
  *
  * @param bytes - The bytes to encode.
  * @returns The encoded CID string with "b" at the beginning, or undefined if the input CID is not 38 characters long.
  */
-export declare function getS5bCidEncoded(bytes: Uint8Array): string;
+export declare function getS5bCidEncoded(bytes: Buffer): string;
 /**
  * Decodes an encoded CID string and returns the decoded bytes.
  *
  * @param cid - The encoded CID string to decode.
- * @returns The decoded bytes of the CID as a Uint8Array.
+ * @returns The decoded bytes of the CID as a Buffer.
  */
-export declare function getS5bBytesDecoded(cid: string): Uint8Array;
+export declare function getS5bBytesDecoded(cid: string): Buffer;
 /**
  * Converts a base58-encoded CID to a base32-encoded CID.
  *
