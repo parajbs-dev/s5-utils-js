@@ -1,205 +1,207 @@
-import { base58BitcoinEncode, base58BitcoinDecode, base32rfcEncode, base32rfcDecode, base64urlEncode, base64urlDecode, } from "./basetools";
+import { encodeBase58BTC, decodeBase58BTC, encodeBase32RFC, decodeBase32RFC, encodeBase64URL, decodeBase64URL, } from "./basetools";
 /**
- * Encodes a CID using base58 encoding and adds a prefix "z".
+ * Encodes a CID (Content Identifier) with a prefix "z" using base58btc-encoding.
  *
- * @param bytes - The bytes to encode.
- * @returns {string} - The encoded CID with "z" prefix or undefined if the cid is not of length 38.
+ * @param bytes The Buffer object representing the Bitcoin address.
+ * @returns The Cid with the prefix "z".
  */
-export function getS5zCidEncoded(bytes) {
+export function encodeCIDWithPrefixZ(bytes) {
     // Check if the bytes has a length of 38 (standard uncompressed Bitcoin address)
     if (bytes.length === 38) {
         // Encode the input address using base58 encoding
-        const zCid = 'z' + base58BitcoinEncode(bytes);
-        // Return the modified Bitcoin address with a prefix "z"
+        const zCid = 'z' + encodeBase58BTC(bytes);
+        // Return the modified Bitcoin address with the prefix "z"
+        return zCid;
+    }
+    else {
+        // Encode the input address using base58 encoding
+        const zCid = 'z' + encodeBase58BTC(bytes);
+        // Return the modified Bitcoin address with the prefix "z"
         return zCid;
     }
     return '';
 }
 /**
- * Decodes a given input address using base58 decoding and returns the byte representation of the decoded address.
- * If the input address starts with "z" and has a length greater than or equal to 53, the remaining characters (excluding the prefix "z") are decoded.
- * If the input address does not start with "z" and has a length less than or equal to 52, the entire address is decoded.
- * Throws an error if the input address does not match any of the specified formats.
+ * Decodes a CID (Content Identifier) with a prefix 'z' if present.
  *
- * @param cid The input address to decode.
- * @returns The byte representation of the decoded Bitcoin address.
+ * @param cid - The CID to decode.
+ * @returns A Buffer containing the decoded CID.
  * @throws Error if the input address is invalid.
  */
-export function getS5zBytesDecoded(cid) {
-    // Check if the first character of the input address is "z" and the length is greater than or equal to 53
-    if (cid[0] === 'z' && cid.length >= 53) {
-        // Decode the remaining characters of the input address (excluding the prefix "z") using base58 decoding
-        const zCidBytes = base58BitcoinDecode(cid.substring(1));
-        // Return the byte representation of the decoded Bitcoin address
+export function decodeCIDWithPrefixZ(cid) {
+    if (cid[0] === 'z') {
+        const zCidBytes = decodeBase58BTC(cid.substring(1));
         return zCidBytes;
     }
-    // Check if the first character of the input address is not "z" and the length is less than or equal to 52
-    if (cid[0] !== 'z' && cid.length <= 52) {
-        // Decode the input address using base58 decoding
-        const zCidBytes = base58BitcoinDecode(cid);
-        // Return the byte representation of the decoded Bitcoin address
+    if (cid[0] !== 'z') {
+        const zCidBytes = decodeBase58BTC(cid);
         return zCidBytes;
     }
     // Handle the case where none of the conditions are met
     throw new Error('Invalid input address');
 }
 /**
- * Encodes a CID using base64url encoding and prefixes it with "u".
+ * Encodes a CID (Content Identifier) with a "u" prefix using base64url-encoding.
  *
- * @param bytes - The bytes to encode.
- * @returns {string|undefined} - The encoded CID with "u" prefix or undefined if the input CID is not of length 38.
+ * @param bytes The input CID as a Buffer object.
+ * @returns The encoded CID with the "u" prefix as a string.
  */
-export function getS5uCidEncoded(bytes) {
+export function encodeCIDWithPrefixU(bytes) {
     // Check if the input CID is of length 38.
     if (bytes.length === 38) {
-        // Encode the CID using base64url encoding and prefix it with "u".
-        const uCid = 'u' + base64urlEncode(bytes);
+        // Encode the CID using base64url-encoding and prefix it with "u".
+        const uCid = 'u' + encodeBase64URL(bytes);
+        return uCid;
+    }
+    else {
+        // Encode the CID using base64url-encoding and prefix it with "u".
+        const uCid = 'u' + encodeBase64URL(bytes);
         return uCid;
     }
     // If the bytes is not of length 38, return undefined.
     return '';
 }
 /**
- * Decodes a Content Identifier (CID) string and returns the decoded bytes as a Buffer object.
+ * Decodes a Content Identifier (CID) with a prefix 'u' and returns the decoded bytes as a Buffer.
  *
- * @param cid - The CID string to decode.
- * @returns The decoded bytes as a Buffer object.
- * @throws Error if the CID format is invalid.
+ * @param cid The CID to decode, either prefixed with 'u' or already decoded.
+ * @returns A Buffer containing the decoded bytes of the CID.
+ * @throws Error Throws an error for an invalid 'u' CID format.
  */
-export function getS5uBytesDecoded(cid) {
-    // Check if the input CID is prefixed with "u" and has a length of at least 52.
-    if (cid[0] === 'u' && cid.length >= 52) {
-        // Decode the CID using base64url decoding after removing the "u" prefix.
-        const uCidBytes = base64urlDecode(cid.substring(1));
+export function decodeCIDWithPrefixU(cid) {
+    if (cid[0] === 'u') {
+        const uCidBytes = decodeBase64URL(cid.substring(1));
         return uCidBytes;
     }
-    // Check if the input CID is not prefixed with "u" and has a length of no more than 51.
-    if (cid[0] !== 'u' && cid.length <= 51) {
-        // Assume the input CID is already decoded and decode it using base64url decoding.
-        const uCidBytes = base64urlDecode(cid);
+    if (cid[0] !== 'u') {
+        // Assume the input CID is already decoded and decode it using base64url-decoding.
+        const uCidBytes = decodeBase64URL(cid);
         return uCidBytes;
     }
     // Throw an error for invalid CID format.
-    throw new Error('Invalid CID format');
+    throw new Error('Invalid u CID format');
 }
 /**
- * Encodes a CID string using base32rfc encoding and adds "b" at the beginning of the resulting string.
+ * Encodes the given bytes using Base32rfc-encoding and prefixes the result with 'b'.
  *
- * @param bytes - The bytes to encode.
- * @returns The encoded CID string with "b" at the beginning, or undefined if the input CID is not 38 characters long.
+ * @param bytes - The bytes to encode (should have a length of 38).
+ * @returns The encoded string prefixed with 'b', or an empty string if the input is invalid.
  */
-export function getS5bCidEncoded(bytes) {
+export function encodeCIDWithPrefixB(bytes) {
     if (bytes.length === 38) {
-        const bCid = 'b' + base32rfcEncode(bytes).toLowerCase();
+        const bCid = 'b' + encodeBase32RFC(bytes).toLowerCase();
+        return bCid;
+    }
+    else {
+        const bCid = 'b' + encodeBase32RFC(bytes).toLowerCase();
         return bCid;
     }
     return '';
 }
 /**
- * Decodes an encoded CID string and returns the decoded bytes.
+ * Decodes a CID (Content Identifier) with a prefix 'B' or 'b' and returns the decoded bytes as a Buffer object.
+ * If the CID starts with 'B' and contains any uppercase letters, it converts the CID to lowercase and removes the 'B' prefix.
+ * If the CID starts with 'b' and contains any lowercase letters, it removes the 'b' prefix.
+ * If the CID contains any lowercase letters, it converts all characters to uppercase.
  *
- * @param cid - The encoded CID string to decode.
- * @returns The decoded bytes of the CID as a Buffer.
+ * @param cid The CID string to decode.
+ * @returns The decoded CID bytes as a Buffer object.
  */
-export function getS5bBytesDecoded(cid) {
-    // Check if the CID starts with "B" (uppercase) and has length >= 62 and contains at least one uppercase character
-    if (cid[0] === 'B' && cid.length >= 62 && /[A-Z]/.test(cid)) {
+export function decodeCIDWithPrefixB(cid) {
+    if (cid[0] === 'B' && /[A-Z]/.test(cid)) {
         cid = cid.toLowerCase(); // Convert the CID to lowercase
         cid = cid.substring(1); // Remove the first character ("B")
     }
-    // Check if the CID starts with "b" (lowercase) and has length >= 62
-    if (cid[0] === 'b' && cid.length >= 62) {
+    if (cid[0] === 'b' && /[a-z]/.test(cid)) {
         cid = cid.substring(1); // Remove the first character ("b")
     }
-    // Check if the CID contains any lowercase characters and has length <= 61
-    if (/[a-z]/.test(cid) && cid.length <= 61) {
+    if (/[a-z]/.test(cid)) {
         cid = cid.toUpperCase(); // Convert all characters to uppercase
     }
-    // Decode the CID using base32rfc decoding and return the decoded bytes
-    const bCidBytes = base32rfcDecode(cid);
+    const bCidBytes = decodeBase32RFC(cid); // Assuming decodeBase32RFC is defined elsewhere
     return bCidBytes;
 }
 /**
- * Converts a base58-encoded CID to a base32-encoded CID.
+ * Converts a Base58btc-encoded CID to a Base32rfc-encoded CID.
  *
- * @param cid - The base58-encoded CID string to convert.
- * @returns The base32-encoded CID string.
+ * @param cid - The Base58btc-encoded CID string to convert.
+ * @returns The Base32rfc-encoded CID string.
  */
-export function convertBase58ToBase32(cid) {
-    // Decode the base58-encoded CID using base58BitcoinDecode function.
-    const decoded = base58BitcoinDecode(cid.substring(1));
-    // Encode the decoded binary data as base32 using base32rfcEncode function.
-    const encoded = base32rfcEncode(decoded).toString().replace(/=+$/, '').toLowerCase();
-    // Add a 'b' prefix to the base32-encoded string and return the result.
+export function convertB58btcToB32rfcCid(cid) {
+    // Decode the base58btc-encoded CID using decodeBase58BTC function.
+    const decoded = decodeBase58BTC(cid.substring(1));
+    // Encode the decoded binary data as base32rfc using encodeBase32RFC function.
+    const encoded = encodeBase32RFC(decoded).toString().replace(/=+$/, '').toLowerCase();
+    // Add a 'b' prefix to the base32rfc-encoded string and return the result.
     return `b${encoded}`;
 }
 /**
- * Converts a base32-encoded CID to a base58-encoded CID.
+ * Converts a Base32rfc-encoded CID to a Base58btc-encoded CID.
  *
- * @param cid - The base32-encoded CID string to convert.
- * @returns The base58-encoded CID string.
+ * @param cid - The Base32rfc-encoded CID to convert.
+ * @returns The Base58btc-encoded CID.
  */
-export function convertBase32ToBase58(cid) {
-    // Decode the base32-encoded CID using base32rfcDecode function.
-    const decoded = base32rfcDecode(cid.substring(1).toUpperCase());
-    // Encode the decoded binary data as base58 using base58BitcoinEncode function.
-    const encoded = base58BitcoinEncode(decoded);
-    // Add a 'z' prefix to the base58-encoded string and return the result.
+export function convertB32rfcToB58btcCid(cid) {
+    // Decode the base32rfc-encoded CID using decodeBase32RFC function.
+    const decoded = decodeBase32RFC(cid.substring(1).toUpperCase());
+    // Encode the decoded binary data as base58btc using encodeBase58BTC function.
+    const encoded = encodeBase58BTC(decoded);
+    // Add a 'z' prefix to the base58btc-encoded string and return the result.
     return `z${encoded}`;
 }
 /**
- * Converts a CID from base64url encoding to base58 encoding.
+ * Converts a base64URL-encoded CID to a base58btc-encoded CID.
  *
- * @param cid - The CID in base64url encoding.
- * @returns The CID in base58 encoding.
+ * @param cid The base64URL-encoded CID to convert.
+ * @returns The base58btc-encoded CID.
  */
-export function convertBase64urlToBase58(cid) {
-    // Decode the base58-encoded CID using base58BitcoinDecode function.
-    const decoded = base64urlDecode(cid.substring(1));
-    // Encode the decoded binary data as base58 using base58BitcoinEncode function.
-    const encoded = base58BitcoinEncode(decoded);
-    // Add a 'z' prefix to the base58-encoded string and return the result.
+export function convertB64urlToB58btcCid(cid) {
+    // Decode the base58btc-encoded CID using decodeBase58BTC function.
+    const decoded = decodeBase64URL(cid.substring(1));
+    // Encode the decoded binary data as base58btc using encodeBase58BTC function.
+    const encoded = encodeBase58BTC(decoded);
+    // Add a 'z' prefix to the base58btc-encoded string and return the result.
     return `z${encoded}`;
 }
 /**
- * Converts a CID from base58 encoding to base64url encoding.
+ * Converts a base58btc-encoded CID (Content Identifier) to a base64url-encoded CID.
  *
- * @param cid - The CID in base58 encoding.
- * @returns The CID in base64url encoding.
+ * @param cid - The base58btc-encoded CID to be converted.
+ * @returns The base64url-encoded CID with a 'u' prefix.
  */
-export function convertBase58ToBase64url(cid) {
-    // Decode the base58-encoded CID using base58BitcoinDecode function.
-    const decoded = base58BitcoinDecode(cid.substring(1));
-    // Encode the decoded binary data as base64url using base64urlEncode function.
-    const encoded = base64urlEncode(decoded);
+export function convertB58btcToB64urlCid(cid) {
+    // Decode the base58btc-encoded CID using decodeBase58BTC function.
+    const decoded = decodeBase58BTC(cid.substring(1));
+    // Encode the decoded binary data as base64url using encodeBase64URL function.
+    const encoded = encodeBase64URL(decoded);
     // Add a 'u' prefix to the base64url-encoded string and return the result.
     return `u${encoded}`;
 }
 /**
- * Converts a CID encoded in base64url format to base32 format.
+ * Converts a base64url-encoded CID to a base32rfc-encoded CID.
  *
- * @param cid The CID to convert.
- * @returns The CID encoded in base32 format.
+ * @param cid The base64url-encoded CID to convert.
+ * @returns The base32rfc-encoded CID.
  */
-export function convertBase64urlToBase32(cid) {
-    // Decode the base64url-encoded CID using base64urlDecode function.
-    const decoded = base64urlDecode(cid.substring(1));
-    // Encode the decoded binary data as base32 using base32rfcEncode function.
-    const encoded = base32rfcEncode(decoded).toString().replace(/=+$/, '').toLowerCase();
-    // Add a 'b' prefix to the base32-encoded string and return the result.
+export function convertB64urlToB32rfcCid(cid) {
+    // Decode the base64url-encoded CID using decodeBase64URL function.
+    const decoded = decodeBase64URL(cid.substring(1));
+    // Encode the decoded binary data as base32rfc using encodeBase32RFC function.
+    const encoded = encodeBase32RFC(decoded).toString().replace(/=+$/, '').toLowerCase();
+    // Add a 'b' prefix to the base32rfc-encoded string and return the result.
     return `b${encoded}`;
 }
 /**
- * Converts a CID encoded in base32 format to base64url format.
+ * Converts a base32rfc-encoded CID to a base64url-encoded CID.
  *
- * @param cid The CID to convert.
- * @returns The CID encoded in base64url format.
+ * @param cid - The base32rfc-encoded CID to be converted.
+ * @returns The base64url-encoded CID.
  */
-export function convertBase32ToBase64url(cid) {
-    // Decode the base32-encoded CID using base32rfcDecode function.
-    const decoded = base32rfcDecode(cid.substring(1).toUpperCase());
-    // Encode the decoded binary data as base64url using base64urlEncode function.
-    const encoded = base64urlEncode(decoded);
+export function convertB32rfcToB64urlCid(cid) {
+    // Decode the base32rfc-encoded CID using decodeBase32RFC function.
+    const decoded = decodeBase32RFC(cid.substring(1).toUpperCase());
+    // Encode the decoded binary data as base64url using encodeBase64URL function.
+    const encoded = encodeBase64URL(decoded);
     // Add a 'u' prefix to the base64url-encoded string and return the result.
     return `u${encoded}`;
 }

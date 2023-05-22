@@ -1,91 +1,91 @@
 /// <reference types="node" />
 /**
- * Encodes a CID using base58 encoding and adds a prefix "z".
+ * Encodes a CID (Content Identifier) with a prefix "z" using base58btc-encoding.
  *
- * @param bytes - The bytes to encode.
- * @returns {string} - The encoded CID with "z" prefix or undefined if the cid is not of length 38.
+ * @param bytes The Buffer object representing the Bitcoin address.
+ * @returns The Cid with the prefix "z".
  */
-export declare function getS5zCidEncoded(bytes: Buffer): string;
+export declare function encodeCIDWithPrefixZ(bytes: Buffer): string;
 /**
- * Decodes a given input address using base58 decoding and returns the byte representation of the decoded address.
- * If the input address starts with "z" and has a length greater than or equal to 53, the remaining characters (excluding the prefix "z") are decoded.
- * If the input address does not start with "z" and has a length less than or equal to 52, the entire address is decoded.
- * Throws an error if the input address does not match any of the specified formats.
+ * Decodes a CID (Content Identifier) with a prefix 'z' if present.
  *
- * @param cid The input address to decode.
- * @returns The byte representation of the decoded Bitcoin address.
+ * @param cid - The CID to decode.
+ * @returns A Buffer containing the decoded CID.
  * @throws Error if the input address is invalid.
  */
-export declare function getS5zBytesDecoded(cid: string): Buffer;
+export declare function decodeCIDWithPrefixZ(cid: string): Buffer;
 /**
- * Encodes a CID using base64url encoding and prefixes it with "u".
+ * Encodes a CID (Content Identifier) with a "u" prefix using base64url-encoding.
  *
- * @param bytes - The bytes to encode.
- * @returns {string|undefined} - The encoded CID with "u" prefix or undefined if the input CID is not of length 38.
+ * @param bytes The input CID as a Buffer object.
+ * @returns The encoded CID with the "u" prefix as a string.
  */
-export declare function getS5uCidEncoded(bytes: Buffer): string;
+export declare function encodeCIDWithPrefixU(bytes: Buffer): string;
 /**
- * Decodes a Content Identifier (CID) string and returns the decoded bytes as a Buffer object.
+ * Decodes a Content Identifier (CID) with a prefix 'u' and returns the decoded bytes as a Buffer.
  *
- * @param cid - The CID string to decode.
- * @returns The decoded bytes as a Buffer object.
- * @throws Error if the CID format is invalid.
+ * @param cid The CID to decode, either prefixed with 'u' or already decoded.
+ * @returns A Buffer containing the decoded bytes of the CID.
+ * @throws Error Throws an error for an invalid 'u' CID format.
  */
-export declare function getS5uBytesDecoded(cid: string): Buffer;
+export declare function decodeCIDWithPrefixU(cid: string): Buffer;
 /**
- * Encodes a CID string using base32rfc encoding and adds "b" at the beginning of the resulting string.
+ * Encodes the given bytes using Base32rfc-encoding and prefixes the result with 'b'.
  *
- * @param bytes - The bytes to encode.
- * @returns The encoded CID string with "b" at the beginning, or undefined if the input CID is not 38 characters long.
+ * @param bytes - The bytes to encode (should have a length of 38).
+ * @returns The encoded string prefixed with 'b', or an empty string if the input is invalid.
  */
-export declare function getS5bCidEncoded(bytes: Buffer): string;
+export declare function encodeCIDWithPrefixB(bytes: Buffer): string;
 /**
- * Decodes an encoded CID string and returns the decoded bytes.
+ * Decodes a CID (Content Identifier) with a prefix 'B' or 'b' and returns the decoded bytes as a Buffer object.
+ * If the CID starts with 'B' and contains any uppercase letters, it converts the CID to lowercase and removes the 'B' prefix.
+ * If the CID starts with 'b' and contains any lowercase letters, it removes the 'b' prefix.
+ * If the CID contains any lowercase letters, it converts all characters to uppercase.
  *
- * @param cid - The encoded CID string to decode.
- * @returns The decoded bytes of the CID as a Buffer.
+ * @param cid The CID string to decode.
+ * @returns The decoded CID bytes as a Buffer object.
  */
-export declare function getS5bBytesDecoded(cid: string): Buffer;
+export declare function decodeCIDWithPrefixB(cid: string): Buffer;
 /**
- * Converts a base58-encoded CID to a base32-encoded CID.
+ * Converts a Base58btc-encoded CID to a Base32rfc-encoded CID.
  *
- * @param cid - The base58-encoded CID string to convert.
- * @returns The base32-encoded CID string.
+ * @param cid - The Base58btc-encoded CID string to convert.
+ * @returns The Base32rfc-encoded CID string.
  */
-export declare function convertBase58ToBase32(cid: string): string;
+export declare function convertB58btcToB32rfcCid(cid: string): string;
 /**
- * Converts a base32-encoded CID to a base58-encoded CID.
+ * Converts a Base32rfc-encoded CID to a Base58btc-encoded CID.
  *
- * @param cid - The base32-encoded CID string to convert.
- * @returns The base58-encoded CID string.
+ * @param cid - The Base32rfc-encoded CID to convert.
+ * @returns The Base58btc-encoded CID.
  */
-export declare function convertBase32ToBase58(cid: string): string;
+export declare function convertB32rfcToB58btcCid(cid: string): string;
 /**
- * Converts a CID from base64url encoding to base58 encoding.
+ * Converts a base64URL-encoded CID to a base58btc-encoded CID.
  *
- * @param cid - The CID in base64url encoding.
- * @returns The CID in base58 encoding.
+ * @param cid The base64URL-encoded CID to convert.
+ * @returns The base58btc-encoded CID.
  */
-export declare function convertBase64urlToBase58(cid: string): string;
+export declare function convertB64urlToB58btcCid(cid: string): string;
 /**
- * Converts a CID from base58 encoding to base64url encoding.
+ * Converts a base58btc-encoded CID (Content Identifier) to a base64url-encoded CID.
  *
- * @param cid - The CID in base58 encoding.
- * @returns The CID in base64url encoding.
+ * @param cid - The base58btc-encoded CID to be converted.
+ * @returns The base64url-encoded CID with a 'u' prefix.
  */
-export declare function convertBase58ToBase64url(cid: string): string;
+export declare function convertB58btcToB64urlCid(cid: string): string;
 /**
- * Converts a CID encoded in base64url format to base32 format.
+ * Converts a base64url-encoded CID to a base32rfc-encoded CID.
  *
- * @param cid The CID to convert.
- * @returns The CID encoded in base32 format.
+ * @param cid The base64url-encoded CID to convert.
+ * @returns The base32rfc-encoded CID.
  */
-export declare function convertBase64urlToBase32(cid: string): string;
+export declare function convertB64urlToB32rfcCid(cid: string): string;
 /**
- * Converts a CID encoded in base32 format to base64url format.
+ * Converts a base32rfc-encoded CID to a base64url-encoded CID.
  *
- * @param cid The CID to convert.
- * @returns The CID encoded in base64url format.
+ * @param cid - The base32rfc-encoded CID to be converted.
+ * @returns The base64url-encoded CID.
  */
-export declare function convertBase32ToBase64url(cid: string): string;
+export declare function convertB32rfcToB64urlCid(cid: string): string;
 //# sourceMappingURL=tools.d.ts.map

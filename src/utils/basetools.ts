@@ -4,13 +4,14 @@ import { Buffer } from "buffer";
 export const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 /**
- * Encodes a Buffer of bytes as a Base58-encoded string for use in Bitcoin addresses.
+ * Encodes a buffer of bytes using Base58 encoding (specifically designed for Bitcoin addresses).
  *
- * @param bytes An array of bytes to encode.
- * @returns A Base58-encoded string.
+ * @param bytes The buffer of bytes to encode.
+ * @returns The Base58-encoded string representation of the input bytes.
  */
-export function base58BitcoinEncode(bytes: Buffer): string {
+export function encodeBase58BTC(bytes: Buffer): string {
   const digits: number[] = [0]; // Initialize an array of digits with a single 0
+
   for (let i = 0; i < bytes.length; i++) {
     // Multiply each digit in the array by 256 (left-shift by 8 bits) and add the byte's value to the first digit
     for (let j = 0; j < digits.length; j++) {
@@ -25,6 +26,7 @@ export function base58BitcoinEncode(bytes: Buffer): string {
       carry = (digits[j] / 58) | 0;
       digits[j] %= 58;
     }
+
     while (carry) {
       digits.push(carry % 58);
       carry = (carry / 58) | 0;
@@ -36,21 +38,24 @@ export function base58BitcoinEncode(bytes: Buffer): string {
   while (digits[digits.length - 1] === 0) {
     digits.pop();
   }
+
   for (let i = digits.length - 1; i >= 0; i--) {
     result += ALPHABET[digits[i]];
   }
+
   return result;
 }
 
 /**
- * Decodes a Base58-encoded string used in Bitcoin addresses to a Buffer of bytes.
+ * Decodes a Base58btc string into a Buffer object.
  *
- * @param str A Base58-encoded string to decode.
- * @returns An array of bytes.
- * @throws Error if the input string contains characters not in the ALPHABET string.
+ * @param str The Base58btc encoded string to decode.
+ * @returns A Buffer object containing the decoded bytes.
+ * @throws Error if the input string is not a valid Base58btc string.
  */
-export function base58BitcoinDecode(str: string): Buffer {
+export function decodeBase58BTC(str: string): Buffer {
   const bytes: number[] = []; // Initialize an empty array for the decoded bytes
+
   for (let i = 0; i < str.length; i++) {
     // Convert each character in the input string to its corresponding value in the ALPHABET string
     let value = ALPHABET.indexOf(str[i]);
@@ -64,6 +69,7 @@ export function base58BitcoinDecode(str: string): Buffer {
       bytes[j] = value & 0xff;
       value >>= 8;
     }
+
     while (value > 0) {
       bytes.push(value & 0xff);
       value >>= 8;
@@ -79,12 +85,12 @@ export function base58BitcoinDecode(str: string): Buffer {
 export const BASE32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
 /**
- * Encodes binary data to Base32 RFC 4648 format.
+ * Encodes data using the Base32 encoding scheme based on the RFC 4648 specification.
  *
- * @param data - The binary data to encode as a Buffer.
- * @returns The Base32-encoded string.
+ * @param data - The input data to be encoded as a Buffer object.
+ * @returns The Base32 encoded string.
  */
-export function base32rfcEncode(data: Buffer): string {
+export function encodeBase32RFC(data: Buffer): string {
   let result = '';
   let bits = 0;
   let value = 0;
@@ -112,12 +118,12 @@ export function base32rfcEncode(data: Buffer): string {
 }
 
 /**
- * Decodes binary data from Base32 RFC 4648 format.
+ * Decodes a string encoded in Base32 RFC 4648 format into a Buffer object.
  *
- * @param encoded - The Base32-encoded string to decode.
- * @returns The decoded binary data as a Buffer.
+ * @param encoded The Base32 encoded string to decode.
+ * @returns A Buffer containing the decoded bytes.
  */
-export function base32rfcDecode(encoded: string): Buffer {
+export function decodeBase32RFC(encoded: string): Buffer {
   const result = new Uint8Array(Math.ceil(encoded.length * 5 / 8)); // Allocate the result array
 
   let bits = 0;
@@ -139,9 +145,6 @@ export function base32rfcDecode(encoded: string): Buffer {
     }
   }
 
-  // Return a subarray of the result that only includes the filled elements
-  //return result.subarray(0, index);
-
   // Convert the Uint8Array to a Buffer
   const buffer = Buffer.from(result.subarray(0, index));
 
@@ -150,33 +153,49 @@ export function base32rfcDecode(encoded: string): Buffer {
 }
 
 /**
- * Encodes a Buffer as a base64url-encoded string.
+ * Encodes a buffer into a Base64URL string.
  *
- * @param input The Buffer to encode.
- * @returns The base64url-encoded string.
+ * @param input - The buffer to be encoded.
+ * @returns The Base64URL-encoded string.
  */
-export function base64urlEncode(input: Buffer): string {
+export function encodeBase64URL(input: Buffer): string {
+  // Convert the buffer into a string of characters using the spread operator
   const base64 = btoa(String.fromCharCode(...input));
+
+  // Replace characters in the Base64 string to make it URL-safe
   return base64.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 }
 
 /**
- * Decodes a base64url-encoded string as a Buffer.
+ * Decodes a Base64 URL-encoded string into a Buffer object.
  *
- * @param input The base64url-encoded string to decode.
- * @returns The decoded Buffer.
+ * @param input - The Base64 URL-encoded string to decode.
+ * @returns A Buffer object containing the decoded binary data.
  */
-export function base64urlDecode(input: string): Buffer {
+export function decodeBase64URL(input: string): Buffer {
+  // Replace characters '-' with '+' and '_' with '/' in the input string
   input = input.replace(/-/g, '+').replace(/_/g, '/');
+
+  // Calculate the padding length
   const paddingLength = input.length % 4;
+
+  // Append necessary padding characters to the input string
   if (paddingLength > 0) {
     input += '='.repeat(4 - paddingLength);
   }
+
+  // Decode the modified Base64 string using the built-in atob function
   const base64 = atob(input);
+
+  // Create a new Buffer object with the same length as the decoded Base64 string
   const output = Buffer.alloc(base64.length);
+
+  // Convert each character in the decoded Base64 string to its character code
+  // and store it in the corresponding index of the output Buffer
   for (let i = 0; i < base64.length; i++) {
     output[i] = base64.charCodeAt(i);
   }
+
+  // Return the resulting Buffer object
   return output;
 }
-
