@@ -1,4 +1,22 @@
 /// <reference types="node" />
+import { Buffer } from "buffer";
+/**
+ * Converts a number into a Buffer of a specified size.
+ * If the resulting value requires fewer bytes than the buffer size,
+ * the returned Buffer will be truncated accordingly.
+ *
+ * @param value - The number to convert into a Buffer.
+ * @param bufferSize - The desired size of the resulting Buffer.
+ * @returns A Buffer containing the converted number.
+ */
+export declare function numToBuf(value: number, bufferSize: number): Buffer;
+/**
+ * Converts a portion of a Buffer to a signed integer.
+ *
+ * @param buffer The Buffer containing the bytes to read from.
+ * @returns The signed integer value obtained from the Buffer.
+ */
+export declare function bufToNum(buffer: Buffer): number;
 /**
  * Encodes a CID (Content Identifier) with a prefix "z" using base58btc-encoding.
  *
@@ -88,4 +106,12 @@ export declare function convertB64urlToB32rfcCid(cid: string): string;
  * @returns The base64url-encoded CID.
  */
 export declare function convertB32rfcToB64urlCid(cid: string): string;
+/**
+ * Converts the download directory input CID into a different format based on certain conditions.
+ *
+ * @param cid - The input CID to be converted.
+ * @returns The converted CID.
+ * @throws Error if the input CID is invalid or cannot be converted.
+ */
+export declare function convertDownloadDirectoryInputCid(cid: string): string;
 //# sourceMappingURL=tools.d.ts.map

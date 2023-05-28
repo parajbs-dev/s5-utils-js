@@ -23,54 +23,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllInfosFromCid = exports.convertS5CidToB3hashHex = exports.convertS5CidToMHashB64url = exports.convertS5CidToMHash = exports.convertMHashToB64url = exports.extractB3hashFromCID = exports.extractRawSizeFromCID = exports.extractMHashFromCID = exports.generateCIDFromMHash = exports.extractB3hashFromMHash = exports.generateMHashFromB3hash = exports.calculateB3hashFromFile = exports.bufToNum = exports.numToBuf = void 0;
+exports.getAllInfosFromCid = exports.convertS5CidToB3hashHex = exports.convertS5CidToMHashB64url = exports.checkRawSizeIsNotNull = exports.convertS5CidToCIDBytes = exports.convertS5CidToMHash = exports.convertMHashToB64url = exports.extractB3hashFromCID = exports.extractRawSizeFromCID = exports.extractMHashFromCID = exports.generateCIDFromMHash = exports.extractB3hashFromMHash = exports.generateMHashFromB3hash = exports.calculateB3hashFromFile = void 0;
 const blake3 = __importStar(require("blake3-wasm"));
 const buffer_1 = require("buffer");
 const tools_1 = require("./tools");
 const constants_1 = require("./constants");
-/**
- * Converts a number into a Buffer of a specified size.
- * If the resulting value requires fewer bytes than the buffer size,
- * the returned Buffer will be truncated accordingly.
- *
- * @param value - The number to convert into a Buffer.
- * @param bufferSize - The desired size of the resulting Buffer.
- * @returns A Buffer containing the converted number.
- */
-function numToBuf(value, bufferSize) {
-    // Create a new Buffer of the specified size
-    const buffer = buffer_1.Buffer.alloc(bufferSize);
-    let lastIndex = bufferSize - 1;
-    // Iterate over the buffer from index 0 to lastIndex
-    for (let i = 0; i <= lastIndex; i++) {
-        // If the value is 0, update the lastIndex and exit the loop
-        if (value === 0) {
-            lastIndex = i - 1;
-            break;
-        }
-        // Set the least significant byte of the value in the current buffer index
-        buffer[i] = value % 256;
-        // Right shift the value by 8 bits to move to the next byte
-        value = value >> 8;
-    }
-    // Return a subarray of the buffer from index 0 to lastIndex + 1
-    return buffer.subarray(0, lastIndex + 1);
-}
-exports.numToBuf = numToBuf;
-/**
- * Converts a portion of a Buffer to a signed integer.
- *
- * @param bytes The Buffer containing the bytes to read from.
- * @param bufferSize The number of bytes to read from the Buffer.
- * @returns The signed integer value obtained from the Buffer.
- */
-function bufToNum(bytes, bufferSize) {
-    // Read a 4-byte signed integer from the bytes in little-endian format
-    const numberFromBuf = bytes.readIntLE(0, bufferSize);
-    // Return the 4-byte signed integer
-    return numberFromBuf;
-}
-exports.bufToNum = bufToNum;
 /**
  * Calculates the BLAKE3 hash of a file.
  *
@@ -98,7 +55,7 @@ async function calculateB3hashFromFile(file) {
     // Obtain the final hash value
     const b3hash = hasher.digest();
     // Return the hash value as a Promise resolved to a Buffer
-    return b3hash;
+    return buffer_1.Buffer.from(b3hash);
 }
 exports.calculateB3hashFromFile = calculateB3hashFromFile;
 /**
@@ -141,7 +98,7 @@ function generateCIDFromMHash(mHash, file) {
     const cid = buffer_1.Buffer.concat([
         buffer_1.Buffer.alloc(1, constants_1.cidTypeRaw),
         mHash,
-        numToBuf(file.size, bufSize) // File size converted to buffer
+        (0, tools_1.numToBuf)(file.size, bufSize) // File size converted to buffer
     ]);
     return cid;
 }
@@ -175,12 +132,11 @@ exports.extractMHashFromCID = extractMHashFromCID;
  * @returns The extracted file size as a number.
  */
 function extractRawSizeFromCID(cid) {
+    let sliceLength = 0;
+    sliceLength = cid.length >= 34 ? 34 : 33;
     // Extract the portion of the CID buffer containing the file size information
-    const rawfilesizeBuffer = cid.slice(34);
-    // Buffer size for storing the file size
-    const bufSize = 4;
-    // Read a 4-byte signed integer from the rawfilesizeBuffer in little-endian format
-    const rawfilesize = bufToNum(rawfilesizeBuffer, bufSize);
+    const rawfilesizeBuffer = cid.slice(sliceLength);
+    const rawfilesize = (0, tools_1.bufToNum)(rawfilesizeBuffer);
     // Return the file size
     return rawfilesize;
 }
@@ -262,6 +218,53 @@ function convertS5CidToMHash(cid) {
 }
 exports.convertS5CidToMHash = convertS5CidToMHash;
 /**
+ * Converts a S5 CID (Content Identifier) to CID bytes.
+ *
+ * @param cid The S5 CID to convert.
+ * @returns The CID bytes as a Uint8Array.
+ * @throws {Error} If the CID input address is invalid.
+ */
+function convertS5CidToCIDBytes(cid) {
+    let cidBytes = null;
+    if (cid[0] === 'z') {
+        cidBytes = (0, tools_1.decodeCIDWithPrefixZ)(cid);
+    }
+    if (cid[0] === 'u') {
+        cidBytes = (0, tools_1.decodeCIDWithPrefixU)(cid);
+    }
+    if (cid[0] === 'b') {
+        cidBytes = (0, tools_1.decodeCIDWithPrefixB)(cid);
+    }
+    if (cidBytes != null) {
+        return cidBytes;
+    }
+    else {
+        throw new Error('Invalid CID input address');
+    }
+}
+exports.convertS5CidToCIDBytes = convertS5CidToCIDBytes;
+/**
+ * Checks if the raw size associated with a given CID is not null.
+ *
+ * @param cid - The Content Identifier (CID) to check.
+ * @returns A boolean indicating if the raw size is not null (true) or null (false).
+ */
+function checkRawSizeIsNotNull(cid) {
+    let rawSizeIsNotNull;
+    // Convert the CID to byte representation
+    const cidBytes = buffer_1.Buffer.from(convertS5CidToCIDBytes(cid));
+    // Extract the raw size from the CID bytes
+    const b3FilesSize = extractRawSizeFromCID(cidBytes);
+    if (b3FilesSize !== 0) {
+        rawSizeIsNotNull = true;
+    }
+    else {
+        rawSizeIsNotNull = false;
+    }
+    return rawSizeIsNotNull;
+}
+exports.checkRawSizeIsNotNull = checkRawSizeIsNotNull;
+/**
  * Converts an S5 CID to a base64 URL-formatted mHash.
  *
  * @param cid The S5 CID to convert.
@@ -329,9 +332,15 @@ function getAllInfosFromCid(cid) {
         zCid = (0, tools_1.encodeCIDWithPrefixZ)(zcidBytes);
         uCid = (0, tools_1.encodeCIDWithPrefixU)(zcidBytes);
         bCid = (0, tools_1.encodeCIDWithPrefixB)(zcidBytes);
-        mHashBase64url = convertS5CidToMHashB64url(cid);
-        b3hashHex = convertS5CidToB3hashHex(cid);
         b3FilesSize = extractRawSizeFromCID(zcidBytes);
+        if (b3FilesSize != 0) {
+            mHashBase64url = convertS5CidToMHashB64url(cid);
+            b3hashHex = convertS5CidToB3hashHex(cid);
+        }
+        else {
+            mHashBase64url = "It is not possible!";
+            b3hashHex = "It is not possible!";
+        }
     }
     else if (cid[0] === 'u') {
         // Decode the CID using decodeCIDWithPrefixU function
@@ -339,9 +348,15 @@ function getAllInfosFromCid(cid) {
         zCid = (0, tools_1.encodeCIDWithPrefixZ)(ucidBytes);
         uCid = (0, tools_1.encodeCIDWithPrefixU)(ucidBytes);
         bCid = (0, tools_1.encodeCIDWithPrefixB)(ucidBytes);
-        mHashBase64url = convertS5CidToMHashB64url(cid);
-        b3hashHex = convertS5CidToB3hashHex(cid);
         b3FilesSize = extractRawSizeFromCID(ucidBytes);
+        if (b3FilesSize != 0) {
+            mHashBase64url = convertS5CidToMHashB64url(cid);
+            b3hashHex = convertS5CidToB3hashHex(cid);
+        }
+        else {
+            mHashBase64url = "It is not possible!";
+            b3hashHex = "It is not possible!";
+        }
     }
     else if (cid[0] === 'b') {
         // Decode the CID using decodeCIDWithPrefixB function
@@ -349,9 +364,15 @@ function getAllInfosFromCid(cid) {
         zCid = (0, tools_1.encodeCIDWithPrefixZ)(bcidBytes);
         uCid = (0, tools_1.encodeCIDWithPrefixU)(bcidBytes);
         bCid = (0, tools_1.encodeCIDWithPrefixB)(bcidBytes);
-        mHashBase64url = convertS5CidToMHashB64url(cid);
-        b3hashHex = convertS5CidToB3hashHex(cid);
         b3FilesSize = extractRawSizeFromCID(bcidBytes);
+        if (b3FilesSize != 0) {
+            mHashBase64url = convertS5CidToMHashB64url(cid);
+            b3hashHex = convertS5CidToB3hashHex(cid);
+        }
+        else {
+            mHashBase64url = "It is not possible!";
+            b3hashHex = "It is not possible!";
+        }
     }
     else {
         // Invalid CID input address

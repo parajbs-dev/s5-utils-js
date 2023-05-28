@@ -1,24 +1,6 @@
 /// <reference types="node" />
 import { Buffer } from "buffer";
 /**
- * Converts a number into a Buffer of a specified size.
- * If the resulting value requires fewer bytes than the buffer size,
- * the returned Buffer will be truncated accordingly.
- *
- * @param value - The number to convert into a Buffer.
- * @param bufferSize - The desired size of the resulting Buffer.
- * @returns A Buffer containing the converted number.
- */
-export declare function numToBuf(value: number, bufferSize: number): Buffer;
-/**
- * Converts a portion of a Buffer to a signed integer.
- *
- * @param bytes The Buffer containing the bytes to read from.
- * @param bufferSize The number of bytes to read from the Buffer.
- * @returns The signed integer value obtained from the Buffer.
- */
-export declare function bufToNum(bytes: Buffer, bufferSize: number): number;
-/**
  * Calculates the BLAKE3 hash of a file.
  *
  * @param file - The file to calculate the hash from.
@@ -83,6 +65,21 @@ export declare function convertMHashToB64url(mHash: Buffer): string;
  * @throws Error if the CID input address is invalid.
  */
 export declare function convertS5CidToMHash(cid: string): Buffer;
+/**
+ * Converts a S5 CID (Content Identifier) to CID bytes.
+ *
+ * @param cid The S5 CID to convert.
+ * @returns The CID bytes as a Uint8Array.
+ * @throws {Error} If the CID input address is invalid.
+ */
+export declare function convertS5CidToCIDBytes(cid: string): Uint8Array;
+/**
+ * Checks if the raw size associated with a given CID is not null.
+ *
+ * @param cid - The Content Identifier (CID) to check.
+ * @returns A boolean indicating if the raw size is not null (true) or null (false).
+ */
+export declare function checkRawSizeIsNotNull(cid: string): boolean;
 /**
  * Converts an S5 CID to a base64 URL-formatted mHash.
  *

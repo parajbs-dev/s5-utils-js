@@ -14,8 +14,6 @@ export {
 
 // blake3tools exports.
 export {
-  numToBuf,
-  bufToNum,
   calculateB3hashFromFile,
   generateMHashFromB3hash,
   extractB3hashFromMHash,
@@ -25,6 +23,8 @@ export {
   extractB3hashFromCID,
   convertMHashToB64url,
   convertS5CidToMHash,
+  convertS5CidToCIDBytes,
+  checkRawSizeIsNotNull,
   convertS5CidToMHashB64url,
   convertS5CidToB3hashHex,
   getAllInfosFromCid,
@@ -36,6 +36,8 @@ export type {
 
 // tools exports.
 export {
+  numToBuf,
+  bufToNum,
   encodeCIDWithPrefixZ,
   decodeCIDWithPrefixZ,
   encodeCIDWithPrefixU,
@@ -48,6 +50,7 @@ export {
   convertB58btcToB64urlCid,
   convertB64urlToB32rfcCid,
   convertB32rfcToB64urlCid,
+  convertDownloadDirectoryInputCid,
 } from "./utils/tools";
 
 export { getFileMimeType } from "./utils/file";

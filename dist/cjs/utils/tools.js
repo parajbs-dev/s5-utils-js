@@ -1,7 +1,53 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertB32rfcToB64urlCid = exports.convertB64urlToB32rfcCid = exports.convertB58btcToB64urlCid = exports.convertB64urlToB58btcCid = exports.convertB32rfcToB58btcCid = exports.convertB58btcToB32rfcCid = exports.decodeCIDWithPrefixB = exports.encodeCIDWithPrefixB = exports.decodeCIDWithPrefixU = exports.encodeCIDWithPrefixU = exports.decodeCIDWithPrefixZ = exports.encodeCIDWithPrefixZ = void 0;
+exports.convertDownloadDirectoryInputCid = exports.convertB32rfcToB64urlCid = exports.convertB64urlToB32rfcCid = exports.convertB58btcToB64urlCid = exports.convertB64urlToB58btcCid = exports.convertB32rfcToB58btcCid = exports.convertB58btcToB32rfcCid = exports.decodeCIDWithPrefixB = exports.encodeCIDWithPrefixB = exports.decodeCIDWithPrefixU = exports.encodeCIDWithPrefixU = exports.decodeCIDWithPrefixZ = exports.encodeCIDWithPrefixZ = exports.bufToNum = exports.numToBuf = void 0;
+const buffer_1 = require("buffer");
 const basetools_1 = require("./basetools");
+const url_1 = require("./url");
+/**
+ * Converts a number into a Buffer of a specified size.
+ * If the resulting value requires fewer bytes than the buffer size,
+ * the returned Buffer will be truncated accordingly.
+ *
+ * @param value - The number to convert into a Buffer.
+ * @param bufferSize - The desired size of the resulting Buffer.
+ * @returns A Buffer containing the converted number.
+ */
+function numToBuf(value, bufferSize) {
+    // Create a new Buffer of the specified size
+    const buffer = buffer_1.Buffer.alloc(bufferSize);
+    let lastIndex = bufferSize - 1;
+    // Iterate over the buffer from index 0 to lastIndex
+    for (let i = 0; i <= lastIndex; i++) {
+        // If the value is 0, update the lastIndex and exit the loop
+        if (value === 0) {
+            lastIndex = i - 1;
+            break;
+        }
+        // Set the least significant byte of the value in the current buffer index
+        buffer[i] = value % 256;
+        // Right shift the value by 8 bits to move to the next byte
+        value = value >> 8;
+    }
+    // Return a subarray of the buffer from index 0 to lastIndex + 1
+    return buffer.subarray(0, lastIndex + 1);
+}
+exports.numToBuf = numToBuf;
+/**
+ * Converts a portion of a Buffer to a signed integer.
+ *
+ * @param buffer The Buffer containing the bytes to read from.
+ * @returns The signed integer value obtained from the Buffer.
+ */
+function bufToNum(buffer) {
+    let value = 0n;
+    const bufferLength = buffer.length;
+    for (let i = bufferLength - 1; i >= 0; i--) {
+        value = (value << 8n) + BigInt(buffer[i]);
+    }
+    return Number(value);
+}
+exports.bufToNum = bufToNum;
 /**
  * Encodes a CID (Content Identifier) with a prefix "z" using base58btc-encoding.
  *
@@ -220,3 +266,40 @@ function convertB32rfcToB64urlCid(cid) {
     return `u${encoded}`;
 }
 exports.convertB32rfcToB64urlCid = convertB32rfcToB64urlCid;
+/**
+ * Converts the download directory input CID into a different format based on certain conditions.
+ *
+ * @param cid - The input CID to be converted.
+ * @returns The converted CID.
+ * @throws Error if the input CID is invalid or cannot be converted.
+ */
+function convertDownloadDirectoryInputCid(cid) {
+    let responseCid = null;
+    if (cid.startsWith('http')) {
+        const subdomain = (0, url_1.getSubdomainFromUrl)(cid);
+        if (subdomain !== null) {
+            responseCid = subdomain;
+        }
+        else {
+            throw new Error('Invalid CID input address');
+        }
+    }
+    else {
+        if (cid[0] === 'z') {
+            responseCid = convertB58btcToB32rfcCid(cid);
+        }
+        if (cid[0] === 'u') {
+            responseCid = convertB64urlToB32rfcCid(cid);
+        }
+        if (cid[0] === 'b') {
+            responseCid = cid;
+        }
+    }
+    if (responseCid !== null) {
+        return responseCid;
+    }
+    else {
+        throw new Error('Invalid CID input address');
+    }
+}
+exports.convertDownloadDirectoryInputCid = convertDownloadDirectoryInputCid;

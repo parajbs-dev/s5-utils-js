@@ -1,3 +1,5 @@
+import { Buffer } from "buffer";
+
 import {
   encodeBase58BTC,
   decodeBase58BTC,
@@ -6,6 +8,62 @@ import {
   encodeBase64URL,
   decodeBase64URL,
 } from "./basetools";
+
+import {
+  getSubdomainFromUrl
+} from "./url";
+
+/**
+ * Converts a number into a Buffer of a specified size.
+ * If the resulting value requires fewer bytes than the buffer size,
+ * the returned Buffer will be truncated accordingly.
+ *
+ * @param value - The number to convert into a Buffer.
+ * @param bufferSize - The desired size of the resulting Buffer.
+ * @returns A Buffer containing the converted number.
+ */
+export function numToBuf(value: number, bufferSize: number): Buffer {
+  // Create a new Buffer of the specified size
+  const buffer = Buffer.alloc(bufferSize);
+
+  let lastIndex = bufferSize - 1;
+
+  // Iterate over the buffer from index 0 to lastIndex
+  for (let i = 0; i <= lastIndex; i++) {
+    // If the value is 0, update the lastIndex and exit the loop
+    if (value === 0) {
+      lastIndex = i - 1;
+      break;
+    }
+
+    // Set the least significant byte of the value in the current buffer index
+    buffer[i] = value % 256;
+
+    // Right shift the value by 8 bits to move to the next byte
+    value = value >> 8;
+  }
+
+  // Return a subarray of the buffer from index 0 to lastIndex + 1
+  return buffer.subarray(0, lastIndex + 1);
+}
+
+/**
+ * Converts a portion of a Buffer to a signed integer.
+ * 
+ * @param buffer The Buffer containing the bytes to read from.
+ * @returns The signed integer value obtained from the Buffer.
+ */
+export function bufToNum(buffer: Buffer): number {
+
+  let value = 0n;
+  const bufferLength = buffer.length;
+
+  for (let i = bufferLength - 1; i >= 0; i--) {
+    value = (value << 8n) + BigInt(buffer[i]);
+  }
+
+  return Number(value);
+}
 
 /**
  * Encodes a CID (Content Identifier) with a prefix "z" using base58btc-encoding.
@@ -241,4 +299,40 @@ export function convertB32rfcToB64urlCid(cid: string): string {
 
   // Add a 'u' prefix to the base64url-encoded string and return the result.
   return `u${encoded}`;
+}
+
+/**
+ * Converts the download directory input CID into a different format based on certain conditions.
+ *
+ * @param cid - The input CID to be converted.
+ * @returns The converted CID.
+ * @throws Error if the input CID is invalid or cannot be converted.
+ */
+export function convertDownloadDirectoryInputCid(cid: string): string {
+  let responseCid: string | null = null;
+
+  if (cid.startsWith('http')) {
+    const subdomain = getSubdomainFromUrl(cid);
+    if (subdomain !== null) {
+      responseCid = subdomain;
+    } else {
+      throw new Error('Invalid CID input address');
+    }
+  } else {
+    if (cid[0] === 'z') {
+      responseCid = convertB58btcToB32rfcCid(cid);
+    }
+    if (cid[0] === 'u') {
+      responseCid = convertB64urlToB32rfcCid(cid);
+    }
+    if (cid[0] === 'b') {
+      responseCid = cid;
+    }
+  }
+
+  if (responseCid !== null) {
+    return responseCid;
+  } else {
+    throw new Error('Invalid CID input address');
+  }
 }
