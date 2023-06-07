@@ -1,6 +1,6 @@
 {
   "name": "s5-utils-js",
-  "version": "0.1.0-beta5",
+  "version": "0.1.0-beta6",
   "description": "S5 Utils Javascript",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
@@ -58,10 +58,9 @@
   "homepage": "https://github.com/parajbs-dev/s5-utils-js",
   "dependencies": {
     "@babel/runtime": "^7.17.8",
-    "@c4312/blake3-internal": "^3.0.0",
     "base32-encode": "^1.1.1",
-    "blake3-wasm": "^3.0.0",
     "buffer": "^6.0.3",
+    "hash-wasm": "^4.9.0",
     "mime": "^3.0.0",
     "path-browserify": "1.0.1",
     "url-join": "^4.0.1",
@@ -93,18 +92,10 @@
     "ts-loader": "^9.4.2",
     "ts-node": "^10.8.1",
     "tsify": "^5.0.4",
-    "typescript": "^5.0.4",
+    "typescript": "5.0.4",
     "webpack": "^5.81.0",
     "webpack-cli": "^5.0.2",
     "webpack-dev-server": "^4.13.3",
     "webpack-merge": "^5.8.0"
-  },
-  "overrides": {
-    "blake3-wasm": "3.0.0",
-    "@c4312/blake3-internal": "3.0.0"
-  },
-  "resolutions": {
-    "@c4312/blake3-internal": "3.0.0",
-    "blake3-wasm": "^3.0.0"
   }
 }

@@ -9,7 +9,7 @@ export { numToBuf, bufToNum, encodeCIDWithPrefixZ, decodeCIDWithPrefixZ, encodeC
 export { getFileMimeType } from "./utils/file";
 export { trimPrefix, trimSuffix } from "./utils/string";
 // url exports.
-export { DEFAULT_S5_PORTAL_URL, defaultS5PortalUrl, URI_S5_PREFIX, uriS5Prefix, defaultPortalUrl, addUrlSubdomain, getSubdomainFromUrl, addUrlQuery, ensurePrefix, ensureUrl, ensureUrlPrefix, makeUrl } from "./utils/url";
+export { DEFAULT_S5_PORTAL_URL, defaultS5PortalUrl, URI_S5_PREFIX, uriS5Prefix, defaultPortalUrl, addUrlSubdomain, getSubdomainFromUrl, addUrlQuery, ensurePrefix, ensureUrl, ensureUrlPrefix, makeUrl, } from "./utils/url";
 export { throwValidationError, validationError } from "./utils/validation";
 // constants exports.
 export { cidTypeRaw, cidTypeMetadataMedia, 

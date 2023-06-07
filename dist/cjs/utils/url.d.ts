@@ -1,8 +1,8 @@
-export declare const DEFAULT_S5_PORTAL_URL = "https://localhost:5522";
+export declare const DEFAULT_S5_PORTAL_URL = "http://localhost:5522";
 /**
  * @deprecated please use DEFAULT_S5_PORTAL_URL.
  */
-export declare const defaultS5PortalUrl = "https://localhost:5522";
+export declare const defaultS5PortalUrl = "http://localhost:5522";
 export declare const URI_S5_PREFIX = "s5://";
 /**
  * @deprecated please use URI_S5_PREFIX.

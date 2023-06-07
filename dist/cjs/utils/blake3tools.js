@@ -1,30 +1,7 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllInfosFromCid = exports.convertS5CidToB3hashHex = exports.convertS5CidToMHashB64url = exports.checkRawSizeIsNotNull = exports.convertS5CidToCIDBytes = exports.convertS5CidToMHash = exports.convertMHashToB64url = exports.extractB3hashFromCID = exports.extractRawSizeFromCID = exports.extractMHashFromCID = exports.generateCIDFromMHash = exports.extractB3hashFromMHash = exports.generateMHashFromB3hash = exports.calculateB3hashFromFile = void 0;
-const blake3 = __importStar(require("blake3-wasm"));
+const hash_wasm_1 = require("hash-wasm");
 const buffer_1 = require("buffer");
 const tools_1 = require("./tools");
 const constants_1 = require("./constants");
@@ -36,9 +13,9 @@ const constants_1 = require("./constants");
  */
 async function calculateB3hashFromFile(file) {
     // Load the BLAKE3 library asynchronously
-    await blake3.load();
+    const BLAKE3 = await (0, hash_wasm_1.createBLAKE3)();
     // Create a hash object
-    const hasher = blake3.createHash();
+    const hasher = BLAKE3.init();
     // Define the chunk size (1 MB)
     const chunkSize = 1024 * 1024;
     // Initialize the position to 0
@@ -47,13 +24,14 @@ async function calculateB3hashFromFile(file) {
     while (position <= file.size) {
         // Slice the file to extract a chunk
         const chunk = file.slice(position, position + chunkSize);
+        const chunkArrayBuffer = await chunk.arrayBuffer();
         // Update the hash with the chunk's data
-        hasher.update(await chunk.arrayBuffer());
+        hasher.update(buffer_1.Buffer.from(chunkArrayBuffer));
         // Move to the next position
         position += chunkSize;
     }
     // Obtain the final hash value
-    const b3hash = hasher.digest();
+    const b3hash = hasher.digest("binary");
     // Return the hash value as a Promise resolved to a Buffer
     return buffer_1.Buffer.from(b3hash);
 }
@@ -98,7 +76,7 @@ function generateCIDFromMHash(mHash, file) {
     const cid = buffer_1.Buffer.concat([
         buffer_1.Buffer.alloc(1, constants_1.cidTypeRaw),
         mHash,
-        (0, tools_1.numToBuf)(file.size, bufSize) // File size converted to buffer
+        (0, tools_1.numToBuf)(file.size, bufSize), // File size converted to buffer
     ]);
     return cid;
 }
@@ -175,10 +153,7 @@ function convertMHashToB64url(mHash) {
     // Convert the hash Buffer to a Base64 string
     const hashBase64 = mHash.toString("base64");
     // Make the Base64 string URL-safe
-    const hashBase64url = hashBase64
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace("=", "");
+    const hashBase64url = hashBase64.replace(/\+/g, "-").replace(/\//g, "_").replace("=", "");
     return hashBase64url;
 }
 exports.convertMHashToB64url = convertMHashToB64url;
@@ -192,19 +167,19 @@ exports.convertMHashToB64url = convertMHashToB64url;
 function convertS5CidToMHash(cid) {
     let mhash;
     // Check the first character of the CID string
-    if (cid[0] === 'z') {
+    if (cid[0] === "z") {
         // Decode the CID using decodeCIDWithPrefixZ function
         const cidBytes = (0, tools_1.decodeCIDWithPrefixZ)(cid);
         // Get the mHash from the decoded CID using extractMHashFromCID function
         mhash = extractMHashFromCID(cidBytes);
     }
-    else if (cid[0] === 'u') {
+    else if (cid[0] === "u") {
         // Decode the CID using decodeCIDWithPrefixU function
         const cidBytes = (0, tools_1.decodeCIDWithPrefixU)(cid);
         // Get the mHash from the decoded CID using extractMHashFromCID function
         mhash = extractMHashFromCID(cidBytes);
     }
-    else if (cid[0] === 'b') {
+    else if (cid[0] === "b") {
         // Decode the CID using decodeCIDWithPrefixB function
         const cidBytes = (0, tools_1.decodeCIDWithPrefixB)(cid);
         // Get the mHash from the decoded CID using extractMHashFromCID function
@@ -212,7 +187,7 @@ function convertS5CidToMHash(cid) {
     }
     else {
         // Invalid CID input address
-        throw new Error('Invalid CID input address');
+        throw new Error("Invalid CID input address");
     }
     return mhash;
 }
@@ -226,20 +201,20 @@ exports.convertS5CidToMHash = convertS5CidToMHash;
  */
 function convertS5CidToCIDBytes(cid) {
     let cidBytes = null;
-    if (cid[0] === 'z') {
+    if (cid[0] === "z") {
         cidBytes = (0, tools_1.decodeCIDWithPrefixZ)(cid);
     }
-    if (cid[0] === 'u') {
+    if (cid[0] === "u") {
         cidBytes = (0, tools_1.decodeCIDWithPrefixU)(cid);
     }
-    if (cid[0] === 'b') {
+    if (cid[0] === "b") {
         cidBytes = (0, tools_1.decodeCIDWithPrefixB)(cid);
     }
     if (cidBytes != null) {
         return cidBytes;
     }
     else {
-        throw new Error('Invalid CID input address');
+        throw new Error("Invalid CID input address");
     }
 }
 exports.convertS5CidToCIDBytes = convertS5CidToCIDBytes;
@@ -288,26 +263,26 @@ exports.convertS5CidToMHashB64url = convertS5CidToMHashB64url;
  */
 function convertS5CidToB3hashHex(cid) {
     let b3hash = null;
-    if (cid[0] === 'z') {
+    if (cid[0] === "z") {
         // Decode the CID using decodeCIDWithPrefixZ function
         const zcidBytes = (0, tools_1.decodeCIDWithPrefixZ)(cid);
         b3hash = extractB3hashFromCID(zcidBytes);
     }
-    if (cid[0] === 'u') {
+    if (cid[0] === "u") {
         // Decode the CID using decodeCIDWithPrefixU function
         const ucidBytes = (0, tools_1.decodeCIDWithPrefixU)(cid);
         b3hash = extractB3hashFromCID(ucidBytes);
     }
-    if (cid[0] === 'b') {
+    if (cid[0] === "b") {
         // Decode the CID using decodeCIDWithPrefixB function
         const bcidBytes = (0, tools_1.decodeCIDWithPrefixB)(cid);
         b3hash = extractB3hashFromCID(bcidBytes);
     }
     if (b3hash != null) {
-        return b3hash.toString('hex');
+        return b3hash.toString("hex");
     }
     else {
-        throw new Error('Invalid CID input address');
+        throw new Error("Invalid CID input address");
     }
 }
 exports.convertS5CidToB3hashHex = convertS5CidToB3hashHex;
@@ -326,7 +301,7 @@ function getAllInfosFromCid(cid) {
     let b3hashHex; // CID converted to hexadecimal B3 hash
     let b3FilesSize; // Raw size extracted from the CID
     // Check the first character of the CID string
-    if (cid[0] === 'z') {
+    if (cid[0] === "z") {
         // Decode the CID using decodeCIDWithPrefixZ function
         const zcidBytes = (0, tools_1.decodeCIDWithPrefixZ)(cid);
         zCid = (0, tools_1.encodeCIDWithPrefixZ)(zcidBytes);
@@ -342,7 +317,7 @@ function getAllInfosFromCid(cid) {
             b3hashHex = "It is not possible!";
         }
     }
-    else if (cid[0] === 'u') {
+    else if (cid[0] === "u") {
         // Decode the CID using decodeCIDWithPrefixU function
         const ucidBytes = (0, tools_1.decodeCIDWithPrefixU)(cid);
         zCid = (0, tools_1.encodeCIDWithPrefixZ)(ucidBytes);
@@ -358,7 +333,7 @@ function getAllInfosFromCid(cid) {
             b3hashHex = "It is not possible!";
         }
     }
-    else if (cid[0] === 'b') {
+    else if (cid[0] === "b") {
         // Decode the CID using decodeCIDWithPrefixB function
         const bcidBytes = (0, tools_1.decodeCIDWithPrefixB)(cid);
         zCid = (0, tools_1.encodeCIDWithPrefixZ)(bcidBytes);
@@ -376,8 +351,15 @@ function getAllInfosFromCid(cid) {
     }
     else {
         // Invalid CID input address
-        throw new Error('Invalid CID input address');
+        throw new Error("Invalid CID input address");
     }
-    return { zcid: zCid, ucid: uCid, bcid: bCid, mhashb64url: mHashBase64url, b3hashhex: b3hashHex, b3filesize: b3FilesSize };
+    return {
+        zcid: zCid,
+        ucid: uCid,
+        bcid: bCid,
+        mhashb64url: mHashBase64url,
+        b3hashhex: b3hashHex,
+        b3filesize: b3FilesSize,
+    };
 }
 exports.getAllInfosFromCid = getAllInfosFromCid;

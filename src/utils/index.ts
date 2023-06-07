@@ -10,7 +10,7 @@ export {
   decodeBase32RFC,
   encodeBase64URL,
   decodeBase64URL,
-} from "./utils/basetools";
+} from "./basetools";
 
 // blake3tools exports.
 export {
@@ -28,9 +28,9 @@ export {
   convertS5CidToMHashB64url,
   convertS5CidToB3hashHex,
   getAllInfosFromCid,
-} from "./utils/blake3tools";
+} from "./blake3tools";
 
-export type { ResponseAllCidsFromCid } from "./utils/blake3tools";
+export type { ResponseAllCidsFromCid } from "./blake3tools";
 
 // tools exports.
 export {
@@ -49,13 +49,13 @@ export {
   convertB64urlToB32rfcCid,
   convertB32rfcToB64urlCid,
   convertDownloadDirectoryInputCid,
-} from "./utils/tools";
+} from "./tools";
 
-export { getFileMimeType } from "./utils/file";
+export { getFileMimeType } from "./file";
 
-export { trimPrefix, trimSuffix } from "./utils/string";
+export { trimPrefix, trimSuffix } from "./string";
 
-export type { JsonData } from "./utils/types";
+export type { JsonData } from "./types";
 
 // url exports.
 export {
@@ -71,9 +71,9 @@ export {
   ensureUrl,
   ensureUrlPrefix,
   makeUrl,
-} from "./utils/url";
+} from "./url";
 
-export { throwValidationError, validationError } from "./utils/validation";
+export { throwValidationError, validationError } from "./validation";
 
 // constants exports.
 export {
@@ -131,4 +131,4 @@ export {
   storageLocationTypeFile,
   storageLocationTypeFull,
   storageLocationTypeBridge,
-} from "./utils/constants";
+} from "./constants";

@@ -9,9 +9,7 @@ import {
   decodeBase64URL,
 } from "./basetools";
 
-import {
-  getSubdomainFromUrl
-} from "./url";
+import { getSubdomainFromUrl } from "./url";
 
 /**
  * Converts a number into a Buffer of a specified size.
@@ -49,12 +47,11 @@ export function numToBuf(value: number, bufferSize: number): Buffer {
 
 /**
  * Converts a portion of a Buffer to a signed integer.
- * 
+ *
  * @param buffer The Buffer containing the bytes to read from.
  * @returns The signed integer value obtained from the Buffer.
  */
 export function bufToNum(buffer: Buffer): number {
-
   let value = 0n;
   const bufferLength = buffer.length;
 
@@ -75,16 +72,16 @@ export function encodeCIDWithPrefixZ(bytes: Buffer): string {
   // Check if the bytes has a length of 38 (standard uncompressed Bitcoin address)
   if (bytes.length === 38) {
     // Encode the input address using base58 encoding
-    const zCid = 'z' + encodeBase58BTC(bytes);
+    const zCid = "z" + encodeBase58BTC(bytes);
     // Return the modified Bitcoin address with the prefix "z"
     return zCid;
   } else {
     // Encode the input address using base58 encoding
-    const zCid = 'z' + encodeBase58BTC(bytes);
+    const zCid = "z" + encodeBase58BTC(bytes);
     // Return the modified Bitcoin address with the prefix "z"
     return zCid;
   }
-  return '';
+  return "";
 }
 
 /**
@@ -95,23 +92,23 @@ export function encodeCIDWithPrefixZ(bytes: Buffer): string {
  * @throws Error if the input address is invalid.
  */
 export function decodeCIDWithPrefixZ(cid: string): Buffer {
-  if (cid[0] === 'z') {
+  if (cid[0] === "z") {
     const zCidBytes = decodeBase58BTC(cid.substring(1));
     return zCidBytes;
   }
 
-  if (cid[0] !== 'z') {
+  if (cid[0] !== "z") {
     const zCidBytes = decodeBase58BTC(cid);
     return zCidBytes;
   }
 
   // Handle the case where none of the conditions are met
-  throw new Error('Invalid input address');
+  throw new Error("Invalid input address");
 }
 
 /**
  * Encodes a CID (Content Identifier) with a "u" prefix using base64url-encoding.
- * 
+ *
  * @param bytes The input CID as a Buffer object.
  * @returns The encoded CID with the "u" prefix as a string.
  */
@@ -119,39 +116,39 @@ export function encodeCIDWithPrefixU(bytes: Buffer): string {
   // Check if the input CID is of length 38.
   if (bytes.length === 38) {
     // Encode the CID using base64url-encoding and prefix it with "u".
-    const uCid = 'u' + encodeBase64URL(bytes);
+    const uCid = "u" + encodeBase64URL(bytes);
     return uCid;
   } else {
     // Encode the CID using base64url-encoding and prefix it with "u".
-    const uCid = 'u' + encodeBase64URL(bytes);
+    const uCid = "u" + encodeBase64URL(bytes);
     return uCid;
   }
 
   // If the bytes is not of length 38, return undefined.
-  return '';
+  return "";
 }
 
 /**
  * Decodes a Content Identifier (CID) with a prefix 'u' and returns the decoded bytes as a Buffer.
- * 
+ *
  * @param cid The CID to decode, either prefixed with 'u' or already decoded.
  * @returns A Buffer containing the decoded bytes of the CID.
  * @throws Error Throws an error for an invalid 'u' CID format.
  */
 export function decodeCIDWithPrefixU(cid: string): Buffer {
-  if (cid[0] === 'u') {
+  if (cid[0] === "u") {
     const uCidBytes = decodeBase64URL(cid.substring(1));
     return uCidBytes;
-  } 
+  }
 
-  if (cid[0] !== 'u') {
+  if (cid[0] !== "u") {
     // Assume the input CID is already decoded and decode it using base64url-decoding.
     const uCidBytes = decodeBase64URL(cid);
     return uCidBytes;
   }
-  
+
   // Throw an error for invalid CID format.
-  throw new Error('Invalid u CID format');
+  throw new Error("Invalid u CID format");
 }
 
 /**
@@ -162,14 +159,14 @@ export function decodeCIDWithPrefixU(cid: string): Buffer {
  */
 export function encodeCIDWithPrefixB(bytes: Buffer): string {
   if (bytes.length === 38) {
-    const bCid = 'b' + encodeBase32RFC(bytes).toLowerCase();
+    const bCid = "b" + encodeBase32RFC(bytes).toLowerCase();
     return bCid;
   } else {
-    const bCid = 'b' + encodeBase32RFC(bytes).toLowerCase();
+    const bCid = "b" + encodeBase32RFC(bytes).toLowerCase();
     return bCid;
   }
-  
-  return '';
+
+  return "";
 }
 
 /**
@@ -182,12 +179,12 @@ export function encodeCIDWithPrefixB(bytes: Buffer): string {
  * @returns The decoded CID bytes as a Buffer object.
  */
 export function decodeCIDWithPrefixB(cid: string): Buffer {
-  if (cid[0] === 'B' && /[A-Z]/.test(cid)) {
+  if (cid[0] === "B" && /[A-Z]/.test(cid)) {
     cid = cid.toLowerCase(); // Convert the CID to lowercase
     cid = cid.substring(1); // Remove the first character ("B")
   }
 
-  if (cid[0] === 'b' && /[a-z]/.test(cid)) {
+  if (cid[0] === "b" && /[a-z]/.test(cid)) {
     cid = cid.substring(1); // Remove the first character ("b")
   }
 
@@ -210,7 +207,7 @@ export function convertB58btcToB32rfcCid(cid: string): string {
   const decoded = decodeBase58BTC(cid.substring(1));
 
   // Encode the decoded binary data as base32rfc using encodeBase32RFC function.
-  const encoded = encodeBase32RFC(decoded).toString().replace(/=+$/, '').toLowerCase();
+  const encoded = encodeBase32RFC(decoded).toString().replace(/=+$/, "").toLowerCase();
 
   // Add a 'b' prefix to the base32rfc-encoded string and return the result.
   return `b${encoded}`;
@@ -278,7 +275,7 @@ export function convertB64urlToB32rfcCid(cid: string): string {
   const decoded = decodeBase64URL(cid.substring(1));
 
   // Encode the decoded binary data as base32rfc using encodeBase32RFC function.
-  const encoded = encodeBase32RFC(decoded).toString().replace(/=+$/, '').toLowerCase();
+  const encoded = encodeBase32RFC(decoded).toString().replace(/=+$/, "").toLowerCase();
 
   // Add a 'b' prefix to the base32rfc-encoded string and return the result.
   return `b${encoded}`;
@@ -311,21 +308,21 @@ export function convertB32rfcToB64urlCid(cid: string): string {
 export function convertDownloadDirectoryInputCid(cid: string): string {
   let responseCid: string | null = null;
 
-  if (cid.startsWith('http')) {
+  if (cid.startsWith("http")) {
     const subdomain = getSubdomainFromUrl(cid);
     if (subdomain !== null) {
       responseCid = subdomain;
     } else {
-      throw new Error('Invalid CID input address');
+      throw new Error("Invalid CID input address");
     }
   } else {
-    if (cid[0] === 'z') {
+    if (cid[0] === "z") {
       responseCid = convertB58btcToB32rfcCid(cid);
     }
-    if (cid[0] === 'u') {
+    if (cid[0] === "u") {
       responseCid = convertB64urlToB32rfcCid(cid);
     }
-    if (cid[0] === 'b') {
+    if (cid[0] === "b") {
       responseCid = cid;
     }
   }
@@ -333,6 +330,6 @@ export function convertDownloadDirectoryInputCid(cid: string): string {
   if (responseCid !== null) {
     return responseCid;
   } else {
-    throw new Error('Invalid CID input address');
+    throw new Error("Invalid CID input address");
   }
 }

@@ -8,6 +8,6 @@ An S5 Utils in Javascript for Decentralized content-addressed storage network S5
 
 1. Clone this repo.
 2. cd s5-utils-js
-3. npm install
+3. yarn install
 
 

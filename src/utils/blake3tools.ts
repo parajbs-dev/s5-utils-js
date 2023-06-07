@@ -1,4 +1,4 @@
-import * as blake3 from "blake3-wasm";
+import { createBLAKE3 } from "hash-wasm";
 import { Buffer } from "buffer";
 
 import {
@@ -22,10 +22,10 @@ import { mhashBlake3Default, cidTypeRaw } from "./constants";
  */
 export async function calculateB3hashFromFile(file: File): Promise<Buffer> {
   // Load the BLAKE3 library asynchronously
-  await blake3.load();
+  const BLAKE3 = await createBLAKE3();
 
   // Create a hash object
-  const hasher = blake3.createHash();
+  const hasher = BLAKE3.init();
 
   // Define the chunk size (1 MB)
   const chunkSize = 1024 * 1024;
@@ -36,14 +36,15 @@ export async function calculateB3hashFromFile(file: File): Promise<Buffer> {
   while (position <= file.size) {
     // Slice the file to extract a chunk
     const chunk = file.slice(position, position + chunkSize);
+    const chunkArrayBuffer = await chunk.arrayBuffer();
     // Update the hash with the chunk's data
-    hasher.update(await chunk.arrayBuffer());
+    hasher.update(Buffer.from(chunkArrayBuffer));
     // Move to the next position
     position += chunkSize;
   }
 
   // Obtain the final hash value
-  const b3hash = hasher.digest();
+  const b3hash = hasher.digest("binary");
   // Return the hash value as a Promise resolved to a Buffer
   return Buffer.from(b3hash);
 }
@@ -64,7 +65,7 @@ export function generateMHashFromB3hash(b3hash: Buffer): Buffer {
 
 /**
  * Extracts the Blake3 hash from the given mHash buffer.
- * 
+ *
  * @param mHash - The mHash buffer from which to extract the Blake3 hash.
  * @returns The extracted Blake3 hash buffer.
  */
@@ -91,15 +92,15 @@ export function generateCIDFromMHash(mHash: Buffer, file: File): Buffer {
   const cid: Buffer = Buffer.concat([
     Buffer.alloc(1, cidTypeRaw), // CID type (assuming `cidTypeRaw` is defined)
     mHash, // Hash
-    numToBuf(file.size, bufSize) // File size converted to buffer
+    numToBuf(file.size, bufSize), // File size converted to buffer
   ]);
-  
+
   return cid;
 }
 
 /**
  * Extracts the mHash from a CID buffer.
- * 
+ *
  * @param cid - The CID buffer.
  * @returns The extracted mHash as a Buffer.
  */
@@ -124,7 +125,7 @@ export function extractMHashFromCID(cid: Buffer): Buffer {
 
 /**
  * Extracts the raw file size from a CID (Content Identifier) buffer.
- * 
+ *
  * @param cid - The CID buffer containing the file size information.
  * @returns The extracted file size as a number.
  */
@@ -172,7 +173,7 @@ export function extractB3hashFromCID(cid: Buffer): Buffer {
 
 /**
  * Converts a hash Buffer to a URL-safe Base64 string.
- * 
+ *
  * @param mHash The mHash Buffer to be converted.
  * @returns The URL-safe Base64 string representation of the mHash.
  */
@@ -181,17 +182,14 @@ export function convertMHashToB64url(mHash: Buffer): string {
   const hashBase64 = mHash.toString("base64");
 
   // Make the Base64 string URL-safe
-  const hashBase64url = hashBase64
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace("=", "");
+  const hashBase64url = hashBase64.replace(/\+/g, "-").replace(/\//g, "_").replace("=", "");
 
   return hashBase64url;
 }
 
 /**
  * Converts a S5 CID (Content Identifier) to an mHash.
- * 
+ *
  * @param cid The CID string to convert.
  * @returns The mHash as a Buffer.
  * @throws Error if the CID input address is invalid.
@@ -200,24 +198,24 @@ export function convertS5CidToMHash(cid: string): Buffer {
   let mhash: Buffer;
 
   // Check the first character of the CID string
-  if (cid[0] === 'z') {
+  if (cid[0] === "z") {
     // Decode the CID using decodeCIDWithPrefixZ function
     const cidBytes = decodeCIDWithPrefixZ(cid);
     // Get the mHash from the decoded CID using extractMHashFromCID function
     mhash = extractMHashFromCID(cidBytes);
-  } else if (cid[0] === 'u') {
+  } else if (cid[0] === "u") {
     // Decode the CID using decodeCIDWithPrefixU function
     const cidBytes = decodeCIDWithPrefixU(cid);
     // Get the mHash from the decoded CID using extractMHashFromCID function
     mhash = extractMHashFromCID(cidBytes);
-  } else if (cid[0] === 'b') {
+  } else if (cid[0] === "b") {
     // Decode the CID using decodeCIDWithPrefixB function
     const cidBytes = decodeCIDWithPrefixB(cid);
     // Get the mHash from the decoded CID using extractMHashFromCID function
     mhash = extractMHashFromCID(cidBytes);
   } else {
     // Invalid CID input address
-    throw new Error('Invalid CID input address');
+    throw new Error("Invalid CID input address");
   }
 
   return mhash;
@@ -225,7 +223,7 @@ export function convertS5CidToMHash(cid: string): Buffer {
 
 /**
  * Converts a S5 CID (Content Identifier) to CID bytes.
- * 
+ *
  * @param cid The S5 CID to convert.
  * @returns The CID bytes as a Uint8Array.
  * @throws {Error} If the CID input address is invalid.
@@ -233,26 +231,26 @@ export function convertS5CidToMHash(cid: string): Buffer {
 export function convertS5CidToCIDBytes(cid: string): Uint8Array {
   let cidBytes: Uint8Array | null = null;
 
-  if (cid[0] === 'z') {
+  if (cid[0] === "z") {
     cidBytes = decodeCIDWithPrefixZ(cid);
   }
-  if (cid[0] === 'u') {
+  if (cid[0] === "u") {
     cidBytes = decodeCIDWithPrefixU(cid);
   }
-  if (cid[0] === 'b') {
+  if (cid[0] === "b") {
     cidBytes = decodeCIDWithPrefixB(cid);
   }
 
   if (cidBytes != null) {
     return cidBytes;
   } else {
-    throw new Error('Invalid CID input address');
+    throw new Error("Invalid CID input address");
   }
 }
 
 /**
  * Checks if the raw size associated with a given CID is not null.
- * 
+ *
  * @param cid - The Content Identifier (CID) to check.
  * @returns A boolean indicating if the raw size is not null (true) or null (false).
  */
@@ -276,7 +274,7 @@ export function checkRawSizeIsNotNull(cid: string): boolean {
 
 /**
  * Converts an S5 CID to a base64 URL-formatted mHash.
- * 
+ *
  * @param cid The S5 CID to convert.
  * @returns The base64 URL-formatted mHash.
  */
@@ -293,7 +291,7 @@ export function convertS5CidToMHashB64url(cid: string): string {
 
 /**
  * Converts an S5 CID (Content Identifier) to a Blake3 hash in hexadecimal format.
- * 
+ *
  * @param cid The S5 CID to convert.
  * @returns The Blake3 hash of the CID in hexadecimal format.
  * @throws {Error} If the input CID is invalid.
@@ -301,26 +299,26 @@ export function convertS5CidToMHashB64url(cid: string): string {
 export function convertS5CidToB3hashHex(cid: string): string {
   let b3hash: Buffer | null = null;
 
-  if (cid[0] === 'z') {
+  if (cid[0] === "z") {
     // Decode the CID using decodeCIDWithPrefixZ function
     const zcidBytes = decodeCIDWithPrefixZ(cid);
     b3hash = extractB3hashFromCID(zcidBytes);
   }
-  if (cid[0] === 'u') {
+  if (cid[0] === "u") {
     // Decode the CID using decodeCIDWithPrefixU function
     const ucidBytes = decodeCIDWithPrefixU(cid);
     b3hash = extractB3hashFromCID(ucidBytes);
   }
-  if (cid[0] === 'b') {
+  if (cid[0] === "b") {
     // Decode the CID using decodeCIDWithPrefixB function
     const bcidBytes = decodeCIDWithPrefixB(cid);
     b3hash = extractB3hashFromCID(bcidBytes);
   }
 
   if (b3hash != null) {
-    return b3hash.toString('hex');
+    return b3hash.toString("hex");
   } else {
-    throw new Error('Invalid CID input address');
+    throw new Error("Invalid CID input address");
   }
 }
 
@@ -332,11 +330,11 @@ export type ResponseAllCidsFromCid = {
   mhashb64url: string;
   b3hashhex: string;
   b3filesize: number;
-}
+};
 
 /**
  * Retrieves various information from a CID (Content Identifier).
- * 
+ *
  * @param cid - The CID string.
  * @returns An object containing different representations and extracted information from the CID.
  * @throws {Error} If the CID input address is invalid.
@@ -350,7 +348,7 @@ export function getAllInfosFromCid(cid: string): ResponseAllCidsFromCid {
   let b3FilesSize: number; // Raw size extracted from the CID
 
   // Check the first character of the CID string
-  if (cid[0] === 'z') {
+  if (cid[0] === "z") {
     // Decode the CID using decodeCIDWithPrefixZ function
     const zcidBytes = decodeCIDWithPrefixZ(cid);
 
@@ -365,7 +363,7 @@ export function getAllInfosFromCid(cid: string): ResponseAllCidsFromCid {
       mHashBase64url = "It is not possible!";
       b3hashHex = "It is not possible!";
     }
-  } else if (cid[0] === 'u') {
+  } else if (cid[0] === "u") {
     // Decode the CID using decodeCIDWithPrefixU function
     const ucidBytes = decodeCIDWithPrefixU(cid);
 
@@ -380,7 +378,7 @@ export function getAllInfosFromCid(cid: string): ResponseAllCidsFromCid {
       mHashBase64url = "It is not possible!";
       b3hashHex = "It is not possible!";
     }
-  } else if (cid[0] === 'b') {
+  } else if (cid[0] === "b") {
     // Decode the CID using decodeCIDWithPrefixB function
     const bcidBytes = decodeCIDWithPrefixB(cid);
 
@@ -397,8 +395,15 @@ export function getAllInfosFromCid(cid: string): ResponseAllCidsFromCid {
     }
   } else {
     // Invalid CID input address
-    throw new Error('Invalid CID input address');
+    throw new Error("Invalid CID input address");
   }
 
-  return { zcid: zCid, ucid: uCid, bcid: bCid, mhashb64url: mHashBase64url, b3hashhex: b3hashHex, b3filesize: b3FilesSize };
+  return {
+    zcid: zCid,
+    ucid: uCid,
+    bcid: bCid,
+    mhashb64url: mHashBase64url,
+    b3hashhex: b3hashHex,
+    b3filesize: b3FilesSize,
+  };
 }

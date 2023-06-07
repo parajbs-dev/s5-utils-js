@@ -31,7 +31,7 @@ function encodeBase58BTC(bytes) {
         }
     }
     // Remove leading zeros from the digits array and convert the remaining digits back to characters in the ALPHABET string
-    let result = '';
+    let result = "";
     while (digits[digits.length - 1] === 0) {
         digits.pop();
     }
@@ -54,7 +54,7 @@ function decodeBase58BTC(str) {
         // Convert each character in the input string to its corresponding value in the ALPHABET string
         let value = exports.ALPHABET.indexOf(str[i]);
         if (value === -1) {
-            throw new Error('Invalid Base58Bitcoin string');
+            throw new Error("Invalid Base58Bitcoin string");
         }
         // Perform a base conversion from base 58 to base 256
         for (let j = 0; j < bytes.length; j++) {
@@ -73,7 +73,7 @@ function decodeBase58BTC(str) {
 }
 exports.decodeBase58BTC = decodeBase58BTC;
 // Base32 RFC 4648 Alphabet
-exports.BASE32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+exports.BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 /**
  * Encodes data using the Base32 encoding scheme based on the RFC 4648 specification.
  *
@@ -81,7 +81,7 @@ exports.BASE32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
  * @returns The Base32 encoded string.
  */
 function encodeBase32RFC(data) {
-    let result = '';
+    let result = "";
     let bits = 0;
     let value = 0;
     for (let i = 0; i < data.length; i++) {
@@ -110,7 +110,7 @@ exports.encodeBase32RFC = encodeBase32RFC;
  * @returns A Buffer containing the decoded bytes.
  */
 function decodeBase32RFC(encoded) {
-    const result = new Uint8Array(Math.ceil(encoded.length * 5 / 8)); // Allocate the result array
+    const result = new Uint8Array(Math.ceil((encoded.length * 5) / 8)); // Allocate the result array
     let bits = 0;
     let value = 0;
     let index = 0;
@@ -142,7 +142,7 @@ function encodeBase64URL(input) {
     // Convert the buffer into a string of characters using the spread operator
     const base64 = btoa(String.fromCharCode(...input));
     // Replace characters in the Base64 string to make it URL-safe
-    return base64.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    return base64.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 exports.encodeBase64URL = encodeBase64URL;
 /**
@@ -153,12 +153,12 @@ exports.encodeBase64URL = encodeBase64URL;
  */
 function decodeBase64URL(input) {
     // Replace characters '-' with '+' and '_' with '/' in the input string
-    input = input.replace(/-/g, '+').replace(/_/g, '/');
+    input = input.replace(/-/g, "+").replace(/_/g, "/");
     // Calculate the padding length
     const paddingLength = input.length % 4;
     // Append necessary padding characters to the input string
     if (paddingLength > 0) {
-        input += '='.repeat(4 - paddingLength);
+        input += "=".repeat(4 - paddingLength);
     }
     // Decode the modified Base64 string using the built-in atob function
     const base64 = atob(input);
