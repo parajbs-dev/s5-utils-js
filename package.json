@@ -1,6 +1,6 @@
 {
   "name": "s5-utils-js",
-  "version": "0.1.0-beta6",
+  "version": "0.1.0-beta7",
   "description": "S5 Utils Javascript",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
