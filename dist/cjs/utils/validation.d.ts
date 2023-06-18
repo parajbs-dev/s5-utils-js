@@ -1,6 +1,5 @@
 /**
  * Throws an error for the given value
- *
  * @param name - The name of the value.
  * @param value - The actual value.
  * @param valueKind - The kind of value that is being checked (e.g. "parameter", "response field", etc.)
@@ -10,7 +9,6 @@
 export declare function throwValidationError(name: string, value: unknown, valueKind: string, expected: string): void;
 /**
  * Returns an error for the given value
- *
  * @param name - The name of the value.
  * @param value - The actual value.
  * @param valueKind - The kind of value that is being checked (e.g. "parameter", "response field", etc.)

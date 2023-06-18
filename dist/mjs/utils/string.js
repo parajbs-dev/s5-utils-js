@@ -1,6 +1,5 @@
 /**
  * Prepends the prefix to the given string only if the string does not already start with the prefix.
- *
  * @param str - The string.
  * @param prefix - The prefix.
  * @returns - The prefixed string.
@@ -13,7 +12,6 @@ export function ensurePrefix(str, prefix) {
 }
 /**
  * Removes a prefix from the beginning of the string.
- *
  * @param str - The string to process.
  * @param prefix - The prefix to remove.
  * @param [limit] - Maximum amount of times to trim. No limit by default.
@@ -33,7 +31,6 @@ export function trimPrefix(str, prefix, limit) {
 }
 /**
  * Removes a suffix from the end of the string.
- *
  * @param str - The string to process.
  * @param suffix - The suffix to remove.
  * @param [limit] - Maximum amount of times to trim. No limit by default.

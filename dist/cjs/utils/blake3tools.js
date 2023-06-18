@@ -1,21 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllInfosFromCid = exports.convertS5CidToB3hashHex = exports.convertS5CidToMHashB64url = exports.checkRawSizeIsNotNull = exports.convertS5CidToCIDBytes = exports.convertS5CidToMHash = exports.convertMHashToB64url = exports.extractB3hashFromCID = exports.extractRawSizeFromCID = exports.extractMHashFromCID = exports.generateCIDFromMHash = exports.extractB3hashFromMHash = exports.generateMHashFromB3hash = exports.calculateB3hashFromFile = void 0;
-const hash_wasm_1 = require("hash-wasm");
+exports.getAllInfosFromCid = exports.convertS5CidToB3hashHex = exports.convertS5CidToMHashB64url = exports.checkRawSizeIsNotNull = exports.convertS5CidToCIDBytes = exports.convertS5CidToMHash = exports.convertMHashToB64url = exports.extractB3hashFromCID = exports.extractRawSizeFromCID = exports.extractMHashFromCID = exports.generateCIDFromMHash = exports.extractB3hashFromMHash = exports.generateMHashFromB3hash = exports.calculateB3hashFromArray = exports.calculateB3hashFromFile = void 0;
+const blake3_1 = require("@noble/hashes/blake3");
 const buffer_1 = require("buffer");
 const tools_1 = require("./tools");
 const constants_1 = require("./constants");
 /**
  * Calculates the BLAKE3 hash of a file.
- *
  * @param file - The file to calculate the hash from.
  * @returns A promise that resolves to a Buffer containing the BLAKE3 hash.
  */
 async function calculateB3hashFromFile(file) {
-    // Load the BLAKE3 library asynchronously
-    const BLAKE3 = await (0, hash_wasm_1.createBLAKE3)();
     // Create a hash object
-    const hasher = BLAKE3.init();
+    const hasher = await blake3_1.blake3.create({});
     // Define the chunk size (1 MB)
     const chunkSize = 1024 * 1024;
     // Initialize the position to 0
@@ -31,14 +28,40 @@ async function calculateB3hashFromFile(file) {
         position += chunkSize;
     }
     // Obtain the final hash value
-    const b3hash = hasher.digest("binary");
+    const b3hash = hasher.digest();
     // Return the hash value as a Promise resolved to a Buffer
     return buffer_1.Buffer.from(b3hash);
 }
 exports.calculateB3hashFromFile = calculateB3hashFromFile;
 /**
+ * Calculates the BLAKE3 hash value of a Uint8Array.
+ * @param array The Uint8Array to calculate the hash from.
+ * @returns A Promise that resolves to a Buffer containing the hash value.
+ */
+async function calculateB3hashFromArray(array) {
+    // Create a hash object
+    const hasher = await blake3_1.blake3.create({});
+    // Define the chunk size (1 MB)
+    const chunkSize = 1024 * 1024;
+    // Initialize the position to 0
+    let position = 0;
+    // Process the array in chunks
+    while (position <= array.length) {
+        // Slice the array to extract a chunk
+        const chunk = array.slice(position, position + chunkSize);
+        // Update the hash with the chunk's data
+        hasher.update(buffer_1.Buffer.from(chunk));
+        // Move to the next position
+        position += chunkSize;
+    }
+    // Obtain the final hash value
+    const b3hash = hasher.digest();
+    // Return the hash value as a Promise resolved to a Buffer
+    return buffer_1.Buffer.from(b3hash);
+}
+exports.calculateB3hashFromArray = calculateB3hashFromArray;
+/**
  * Generates an S5 mHash by prepending a given Blake3 hash with a default value.
- *
  * @param b3hash - The input Blake3 hash buffer.
  * @returns The resulting S5 mHash buffer.
  */
@@ -51,7 +74,6 @@ function generateMHashFromB3hash(b3hash) {
 exports.generateMHashFromB3hash = generateMHashFromB3hash;
 /**
  * Extracts the Blake3 hash from the given mHash buffer.
- *
  * @param mHash - The mHash buffer from which to extract the Blake3 hash.
  * @returns The extracted Blake3 hash buffer.
  */
@@ -64,7 +86,6 @@ function extractB3hashFromMHash(mHash) {
 exports.extractB3hashFromMHash = extractB3hashFromMHash;
 /**
  * Generates a S5 CID (Content Identifier) from a hash and file size - into a Buffer.
- *
  * @param mHash The hash value as a Buffer object.
  * @param file The file object.
  * @returns The generated CID as a Buffer object.
@@ -72,6 +93,7 @@ exports.extractB3hashFromMHash = extractB3hashFromMHash;
 function generateCIDFromMHash(mHash, file) {
     // Buffer size for storing the file size
     const bufSize = 4;
+    console.log("numToBuf:   ", new Uint8Array((0, tools_1.numToBuf)(file.size, bufSize)));
     // Concatenate the CID parts
     const cid = buffer_1.Buffer.concat([
         buffer_1.Buffer.alloc(1, constants_1.cidTypeRaw),
@@ -83,7 +105,6 @@ function generateCIDFromMHash(mHash, file) {
 exports.generateCIDFromMHash = generateCIDFromMHash;
 /**
  * Extracts the mHash from a CID buffer.
- *
  * @param cid - The CID buffer.
  * @returns The extracted mHash as a Buffer.
  */
@@ -105,7 +126,6 @@ function extractMHashFromCID(cid) {
 exports.extractMHashFromCID = extractMHashFromCID;
 /**
  * Extracts the raw file size from a CID (Content Identifier) buffer.
- *
  * @param cid - The CID buffer containing the file size information.
  * @returns The extracted file size as a number.
  */
@@ -121,7 +141,6 @@ function extractRawSizeFromCID(cid) {
 exports.extractRawSizeFromCID = extractRawSizeFromCID;
 /**
  * Extracts a Blake3 hash from a CID (Content Identifier) buffer.
- *
  * @param cid - The CID buffer.
  * @returns The extracted Blake3 hash as a buffer.
  */
@@ -145,7 +164,6 @@ function extractB3hashFromCID(cid) {
 exports.extractB3hashFromCID = extractB3hashFromCID;
 /**
  * Converts a hash Buffer to a URL-safe Base64 string.
- *
  * @param mHash The mHash Buffer to be converted.
  * @returns The URL-safe Base64 string representation of the mHash.
  */
@@ -159,7 +177,6 @@ function convertMHashToB64url(mHash) {
 exports.convertMHashToB64url = convertMHashToB64url;
 /**
  * Converts a S5 CID (Content Identifier) to an mHash.
- *
  * @param cid The CID string to convert.
  * @returns The mHash as a Buffer.
  * @throws Error if the CID input address is invalid.
@@ -194,7 +211,6 @@ function convertS5CidToMHash(cid) {
 exports.convertS5CidToMHash = convertS5CidToMHash;
 /**
  * Converts a S5 CID (Content Identifier) to CID bytes.
- *
  * @param cid The S5 CID to convert.
  * @returns The CID bytes as a Uint8Array.
  * @throws {Error} If the CID input address is invalid.
@@ -220,7 +236,6 @@ function convertS5CidToCIDBytes(cid) {
 exports.convertS5CidToCIDBytes = convertS5CidToCIDBytes;
 /**
  * Checks if the raw size associated with a given CID is not null.
- *
  * @param cid - The Content Identifier (CID) to check.
  * @returns A boolean indicating if the raw size is not null (true) or null (false).
  */
@@ -241,7 +256,6 @@ function checkRawSizeIsNotNull(cid) {
 exports.checkRawSizeIsNotNull = checkRawSizeIsNotNull;
 /**
  * Converts an S5 CID to a base64 URL-formatted mHash.
- *
  * @param cid The S5 CID to convert.
  * @returns The base64 URL-formatted mHash.
  */
@@ -256,7 +270,6 @@ function convertS5CidToMHashB64url(cid) {
 exports.convertS5CidToMHashB64url = convertS5CidToMHashB64url;
 /**
  * Converts an S5 CID (Content Identifier) to a Blake3 hash in hexadecimal format.
- *
  * @param cid The S5 CID to convert.
  * @returns The Blake3 hash of the CID in hexadecimal format.
  * @throws {Error} If the input CID is invalid.
@@ -288,7 +301,6 @@ function convertS5CidToB3hashHex(cid) {
 exports.convertS5CidToB3hashHex = convertS5CidToB3hashHex;
 /**
  * Retrieves various information from a CID (Content Identifier).
- *
  * @param cid - The CID string.
  * @returns An object containing different representations and extracted information from the CID.
  * @throws {Error} If the CID input address is invalid.

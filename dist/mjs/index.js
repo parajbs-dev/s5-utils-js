@@ -3,9 +3,11 @@
 // basetools exports.
 export { encodeBase58BTC, decodeBase58BTC, encodeBase32RFC, decodeBase32RFC, encodeBase64URL, decodeBase64URL, } from "./utils/basetools";
 // blake3tools exports.
-export { calculateB3hashFromFile, generateMHashFromB3hash, extractB3hashFromMHash, generateCIDFromMHash, extractMHashFromCID, extractRawSizeFromCID, extractB3hashFromCID, convertMHashToB64url, convertS5CidToMHash, convertS5CidToCIDBytes, checkRawSizeIsNotNull, convertS5CidToMHashB64url, convertS5CidToB3hashHex, getAllInfosFromCid, } from "./utils/blake3tools";
+export { calculateB3hashFromFile, calculateB3hashFromArray, generateMHashFromB3hash, extractB3hashFromMHash, generateCIDFromMHash, extractMHashFromCID, extractRawSizeFromCID, extractB3hashFromCID, convertMHashToB64url, convertS5CidToMHash, convertS5CidToCIDBytes, checkRawSizeIsNotNull, convertS5CidToMHashB64url, convertS5CidToB3hashHex, getAllInfosFromCid, } from "./utils/blake3tools";
 // tools exports.
 export { numToBuf, bufToNum, encodeCIDWithPrefixZ, decodeCIDWithPrefixZ, encodeCIDWithPrefixU, decodeCIDWithPrefixU, encodeCIDWithPrefixB, decodeCIDWithPrefixB, convertB58btcToB32rfcCid, convertB32rfcToB58btcCid, convertB64urlToB58btcCid, convertB58btcToB64urlCid, convertB64urlToB32rfcCid, convertB32rfcToB64urlCid, convertDownloadDirectoryInputCid, } from "./utils/tools";
+// encrypt exports.
+export { generateKeyXchacha20, encryptFileXchacha20, getXchacha20KeyAndClear, createEncryptedCid, encryptFile, generateEncryptedCIDFromMHash, } from "./utils/encrypt";
 export { getFileMimeType } from "./utils/file";
 export { trimPrefix, trimSuffix } from "./utils/string";
 // url exports.

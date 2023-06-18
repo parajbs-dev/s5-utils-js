@@ -15,6 +15,7 @@ export {
 // blake3tools exports.
 export {
   calculateB3hashFromFile,
+  calculateB3hashFromArray,
   generateMHashFromB3hash,
   extractB3hashFromMHash,
   generateCIDFromMHash,
@@ -50,6 +51,16 @@ export {
   convertB32rfcToB64urlCid,
   convertDownloadDirectoryInputCid,
 } from "./tools";
+
+// encrypt exports.
+export {
+  generateKeyXchacha20,
+  encryptFileXchacha20,
+  getXchacha20KeyAndClear,
+  createEncryptedCid,
+  encryptFile,
+  generateEncryptedCIDFromMHash,
+} from "./encrypt";
 
 export { getFileMimeType } from "./file";
 

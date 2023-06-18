@@ -20,7 +20,6 @@ exports.URI_S5_PREFIX = "s5://";
 exports.uriS5Prefix = exports.URI_S5_PREFIX;
 /**
  * Returns the default portal URL.
- *
  * @returns - The portal URL.
  */
 function defaultPortalUrl() {
@@ -32,7 +31,6 @@ function defaultPortalUrl() {
 exports.defaultPortalUrl = defaultPortalUrl;
 /**
  * Adds a subdomain to the given URL.
- *
  * @param url - The URL.
  * @param subdomain - The subdomain to add.
  * @returns - The final URL.
@@ -47,7 +45,6 @@ exports.addUrlSubdomain = addUrlSubdomain;
 /**
  * Returns the first subdomain of the given URL.
  * If the URL does not contain a subdomain, returns null.
- *
  * @param url The URL to extract the subdomain from.
  * @returns The first subdomain of the URL, or null if there is no subdomain.
  */
@@ -60,7 +57,6 @@ function getSubdomainFromUrl(url) {
 exports.getSubdomainFromUrl = getSubdomainFromUrl;
 /**
  * Adds a query to the given URL.
- *
  * @param url - The URL.
  * @param query - The query parameters.
  * @returns - The final URL.
@@ -75,7 +71,6 @@ function addUrlQuery(url, query) {
 exports.addUrlQuery = addUrlQuery;
 /**
  * Prepends the prefix to the given string only if the string does not already start with the prefix.
- *
  * @param str - The string.
  * @param prefix - The prefix.
  * @returns - The prefixed string.
@@ -89,7 +84,6 @@ function ensurePrefix(str, prefix) {
 exports.ensurePrefix = ensurePrefix;
 /**
  * Ensures that the given string is a URL.
- *
  * @param url - The given string.
  * @returns - The URL.
  */
@@ -102,7 +96,6 @@ function ensureUrl(url) {
 exports.ensureUrl = ensureUrl;
 /**
  * Ensures that the given string is a URL with a protocol prefix.
- *
  * @param url - The given string.
  * @returns - The URL.
  */
@@ -119,7 +112,6 @@ exports.ensureUrlPrefix = ensureUrlPrefix;
 /**
  * Properly joins paths together to create a URL. Takes a variable number of
  * arguments.
- *
  * @param args - Array of URL parts to join.
  * @returns - Final URL constructed from the input parts.
  */

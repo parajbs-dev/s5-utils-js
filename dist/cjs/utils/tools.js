@@ -8,12 +8,12 @@ const url_1 = require("./url");
  * Converts a number into a Buffer of a specified size.
  * If the resulting value requires fewer bytes than the buffer size,
  * the returned Buffer will be truncated accordingly.
- *
  * @param value - The number to convert into a Buffer.
  * @param bufferSize - The desired size of the resulting Buffer.
  * @returns A Buffer containing the converted number.
  */
 function numToBuf(value, bufferSize) {
+    console.log("ddddddd");
     // Create a new Buffer of the specified size
     const buffer = buffer_1.Buffer.alloc(bufferSize);
     let lastIndex = bufferSize - 1;
@@ -35,7 +35,6 @@ function numToBuf(value, bufferSize) {
 exports.numToBuf = numToBuf;
 /**
  * Converts a portion of a Buffer to a signed integer.
- *
  * @param buffer The Buffer containing the bytes to read from.
  * @returns The signed integer value obtained from the Buffer.
  */
@@ -50,7 +49,6 @@ function bufToNum(buffer) {
 exports.bufToNum = bufToNum;
 /**
  * Encodes a CID (Content Identifier) with a prefix "z" using base58btc-encoding.
- *
  * @param bytes The Buffer object representing the Bitcoin address.
  * @returns The Cid with the prefix "z".
  */
@@ -73,7 +71,6 @@ function encodeCIDWithPrefixZ(bytes) {
 exports.encodeCIDWithPrefixZ = encodeCIDWithPrefixZ;
 /**
  * Decodes a CID (Content Identifier) with a prefix 'z' if present.
- *
  * @param cid - The CID to decode.
  * @returns A Buffer containing the decoded CID.
  * @throws Error if the input address is invalid.
@@ -93,7 +90,6 @@ function decodeCIDWithPrefixZ(cid) {
 exports.decodeCIDWithPrefixZ = decodeCIDWithPrefixZ;
 /**
  * Encodes a CID (Content Identifier) with a "u" prefix using base64url-encoding.
- *
  * @param bytes The input CID as a Buffer object.
  * @returns The encoded CID with the "u" prefix as a string.
  */
@@ -115,7 +111,6 @@ function encodeCIDWithPrefixU(bytes) {
 exports.encodeCIDWithPrefixU = encodeCIDWithPrefixU;
 /**
  * Decodes a Content Identifier (CID) with a prefix 'u' and returns the decoded bytes as a Buffer.
- *
  * @param cid The CID to decode, either prefixed with 'u' or already decoded.
  * @returns A Buffer containing the decoded bytes of the CID.
  * @throws Error Throws an error for an invalid 'u' CID format.
@@ -136,7 +131,6 @@ function decodeCIDWithPrefixU(cid) {
 exports.decodeCIDWithPrefixU = decodeCIDWithPrefixU;
 /**
  * Encodes the given bytes using Base32rfc-encoding and prefixes the result with 'b'.
- *
  * @param bytes - The bytes to encode (should have a length of 38).
  * @returns The encoded string prefixed with 'b', or an empty string if the input is invalid.
  */
@@ -157,7 +151,6 @@ exports.encodeCIDWithPrefixB = encodeCIDWithPrefixB;
  * If the CID starts with 'B' and contains any uppercase letters, it converts the CID to lowercase and removes the 'B' prefix.
  * If the CID starts with 'b' and contains any lowercase letters, it removes the 'b' prefix.
  * If the CID contains any lowercase letters, it converts all characters to uppercase.
- *
  * @param cid The CID string to decode.
  * @returns The decoded CID bytes as a Buffer object.
  */
@@ -178,7 +171,6 @@ function decodeCIDWithPrefixB(cid) {
 exports.decodeCIDWithPrefixB = decodeCIDWithPrefixB;
 /**
  * Converts a Base58btc-encoded CID to a Base32rfc-encoded CID.
- *
  * @param cid - The Base58btc-encoded CID string to convert.
  * @returns The Base32rfc-encoded CID string.
  */
@@ -193,7 +185,6 @@ function convertB58btcToB32rfcCid(cid) {
 exports.convertB58btcToB32rfcCid = convertB58btcToB32rfcCid;
 /**
  * Converts a Base32rfc-encoded CID to a Base58btc-encoded CID.
- *
  * @param cid - The Base32rfc-encoded CID to convert.
  * @returns The Base58btc-encoded CID.
  */
@@ -208,7 +199,6 @@ function convertB32rfcToB58btcCid(cid) {
 exports.convertB32rfcToB58btcCid = convertB32rfcToB58btcCid;
 /**
  * Converts a base64URL-encoded CID to a base58btc-encoded CID.
- *
  * @param cid The base64URL-encoded CID to convert.
  * @returns The base58btc-encoded CID.
  */
@@ -223,7 +213,6 @@ function convertB64urlToB58btcCid(cid) {
 exports.convertB64urlToB58btcCid = convertB64urlToB58btcCid;
 /**
  * Converts a base58btc-encoded CID (Content Identifier) to a base64url-encoded CID.
- *
  * @param cid - The base58btc-encoded CID to be converted.
  * @returns The base64url-encoded CID with a 'u' prefix.
  */
@@ -238,7 +227,6 @@ function convertB58btcToB64urlCid(cid) {
 exports.convertB58btcToB64urlCid = convertB58btcToB64urlCid;
 /**
  * Converts a base64url-encoded CID to a base32rfc-encoded CID.
- *
  * @param cid The base64url-encoded CID to convert.
  * @returns The base32rfc-encoded CID.
  */
@@ -253,7 +241,6 @@ function convertB64urlToB32rfcCid(cid) {
 exports.convertB64urlToB32rfcCid = convertB64urlToB32rfcCid;
 /**
  * Converts a base32rfc-encoded CID to a base64url-encoded CID.
- *
  * @param cid - The base32rfc-encoded CID to be converted.
  * @returns The base64url-encoded CID.
  */
@@ -268,7 +255,6 @@ function convertB32rfcToB64urlCid(cid) {
 exports.convertB32rfcToB64urlCid = convertB32rfcToB64urlCid;
 /**
  * Converts the download directory input CID into a different format based on certain conditions.
- *
  * @param cid - The input CID to be converted.
  * @returns The converted CID.
  * @throws Error if the input CID is invalid or cannot be converted.
