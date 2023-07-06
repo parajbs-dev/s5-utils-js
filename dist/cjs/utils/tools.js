@@ -13,7 +13,6 @@ const url_1 = require("./url");
  * @returns A Buffer containing the converted number.
  */
 function numToBuf(value, bufferSize) {
-    console.log("ddddddd");
     // Create a new Buffer of the specified size
     const buffer = buffer_1.Buffer.alloc(bufferSize);
     let lastIndex = bufferSize - 1;

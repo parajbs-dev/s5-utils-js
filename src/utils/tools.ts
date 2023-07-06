@@ -20,7 +20,7 @@ import { getSubdomainFromUrl } from "./url";
  * @returns A Buffer containing the converted number.
  */
 export function numToBuf(value: number, bufferSize: number): Buffer {
-  console.log("ddddddd");
+
   // Create a new Buffer of the specified size
   const buffer = Buffer.alloc(bufferSize);
 

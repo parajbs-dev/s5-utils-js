@@ -112,7 +112,7 @@ export function extractB3hashFromMHash(mHash: Buffer): Buffer {
 export function generateCIDFromMHash(mHash: Buffer, file: File): Buffer {
   // Buffer size for storing the file size
   const bufSize = 4;
-  console.log("numToBuf:   ", new Uint8Array(numToBuf(file.size, bufSize)));
+
   // Concatenate the CID parts
   const cid: Buffer = Buffer.concat([
     Buffer.alloc(1, cidTypeRaw), // CID type (assuming `cidTypeRaw` is defined)

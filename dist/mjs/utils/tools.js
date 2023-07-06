@@ -10,7 +10,6 @@ import { getSubdomainFromUrl } from "./url";
  * @returns A Buffer containing the converted number.
  */
 export function numToBuf(value, bufferSize) {
-    console.log("ddddddd");
     // Create a new Buffer of the specified size
     const buffer = Buffer.alloc(bufferSize);
     let lastIndex = bufferSize - 1;
