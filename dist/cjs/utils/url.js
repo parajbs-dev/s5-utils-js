@@ -8,7 +8,7 @@ const url_join_1 = __importDefault(require("url-join"));
 const url_parse_1 = __importDefault(require("url-parse"));
 const string_1 = require("./string");
 const validation_1 = require("./validation");
-exports.DEFAULT_S5_PORTAL_URL = "http://localhost:5522";
+exports.DEFAULT_S5_PORTAL_URL = "http://localhost:5050";
 /**
  * @deprecated please use DEFAULT_S5_PORTAL_URL.
  */

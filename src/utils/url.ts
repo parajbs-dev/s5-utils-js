@@ -4,7 +4,7 @@ import parse from "url-parse";
 import { trimSuffix } from "./string";
 import { throwValidationError } from "./validation";
 
-export const DEFAULT_S5_PORTAL_URL = "http://localhost:5522";
+export const DEFAULT_S5_PORTAL_URL = "http://localhost:5050";
 
 /**
  * @deprecated please use DEFAULT_S5_PORTAL_URL.
