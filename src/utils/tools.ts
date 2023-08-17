@@ -12,37 +12,39 @@ import {
 import { getSubdomainFromUrl } from "./url";
 
 /**
- * Converts a number into a Buffer of a specified size.
- * If the resulting value requires fewer bytes than the buffer size,
- * the returned Buffer will be truncated accordingly.
- * @param value - The number to convert into a Buffer.
- * @param bufferSize - The desired size of the resulting Buffer.
- * @returns A Buffer containing the converted number.
+ * Converts a number into a Buffer representation with a specified buffer size.
+ * Any leading zero bytes are removed from the Buffer.
+ * @param value1 The number to be converted into a Buffer.
+ * @param bufferSize The size of the Buffer to be created.
+ * @returns A Buffer containing the converted value.
  */
-export function numToBuf(value: number, bufferSize: number): Buffer {
-
-  // Create a new Buffer of the specified size
+export function numToBuf(value1: number, bufferSize: number): Buffer {
+  // Create a buffer of the specified size
   const buffer = Buffer.alloc(bufferSize);
-
+  
+  // Initialize the index of the last element in the buffer
   let lastIndex = bufferSize - 1;
-
-  // Iterate over the buffer from index 0 to lastIndex
+  
+  // Convert the input number to a BigInt
+  let value = BigInt(value1);
+  
+  // Loop through each byte of the buffer
   for (let i = 0; i <= lastIndex; i++) {
-    // If the value is 0, update the lastIndex and exit the loop
-    if (value === 0) {
+    // Check if the value is zero
+    if (value === 0n) {
       lastIndex = i - 1;
       break;
     }
-
-    // Set the least significant byte of the value in the current buffer index
-    buffer[i] = value % 256;
-
-    // Right shift the value by 8 bits to move to the next byte
-    value = value >> 8;
+    
+    // Store the lowest 8 bits of the value as a number in the buffer
+    buffer[i] = Number(value & 0xffn);
+    
+    // Shift the value right by 8 bits
+    value = value >> 8n;
   }
-
-  // Return a subarray of the buffer from index 0 to lastIndex + 1
-  return buffer.subarray(0, lastIndex + 1);
+  
+  // Return the relevant portion of the buffer
+  return buffer.slice(0, lastIndex + 1);
 }
 
 /**

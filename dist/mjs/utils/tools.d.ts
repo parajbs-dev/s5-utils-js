@@ -1,14 +1,13 @@
 /// <reference types="node" />
 import { Buffer } from "buffer";
 /**
- * Converts a number into a Buffer of a specified size.
- * If the resulting value requires fewer bytes than the buffer size,
- * the returned Buffer will be truncated accordingly.
- * @param value - The number to convert into a Buffer.
- * @param bufferSize - The desired size of the resulting Buffer.
- * @returns A Buffer containing the converted number.
+ * Converts a number into a Buffer representation with a specified buffer size.
+ * Any leading zero bytes are removed from the Buffer.
+ * @param value1 The number to be converted into a Buffer.
+ * @param bufferSize The size of the Buffer to be created.
+ * @returns A Buffer containing the converted value.
  */
-export declare function numToBuf(value: number, bufferSize: number): Buffer;
+export declare function numToBuf(value1: number, bufferSize: number): Buffer;
 /**
  * Converts a portion of a Buffer to a signed integer.
  * @param buffer The Buffer containing the bytes to read from.
